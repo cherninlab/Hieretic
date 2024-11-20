@@ -1,82 +1,70 @@
-import type { Deck, UserProfile } from '@shared/types/user';
+import { createTestDeck } from '@shared/testing/test-cards';
+import type { Card } from '@shared/types';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useProfileStore } from '../store/profileStore';
 import styles from './ProfilePage.module.css';
 
 type Tab = 'profile' | 'decks' | 'settings';
 
-export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<Tab>('profile');
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [decks, setDecks] = useState<Deck[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+  let timeout: NodeJS.Timeout;
 
-  if (isSaving) {
-    console.log('saving...');
-  }
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/profile');
-        const data = await response.json();
-        setProfile(data);
-
-        // Fetch decks if profile loads successfully
-        const decksResponse = await fetch('/api/decks');
-        const decksData = await decksResponse.json();
-        setDecks(decksData);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
-        setIsLoading(false);
-      }
+  return function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
     };
 
-    fetchProfile();
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+export default function ProfilePage() {
+  const navigate = useNavigate();
+  const { profile, isLoading, error, updateProfile } = useProfileStore();
+  const [activeTab, setActiveTab] = useState<Tab>('profile');
+  const [testDeck, setTestDeck] = useState<Card[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Memoized debounced update function
+  const debouncedUpdate = useCallback(
+    debounce((updates: Partial<typeof profile>) => {
+      updateProfile(updates ?? {});
+    }, 500),
+    [], // Empty dependency array since we don't want to recreate this function
+  );
+
+  useEffect(() => {
+    const deck = createTestDeck();
+    setTestDeck(deck);
   }, []);
 
-  const saveProfile = async (updates: Partial<UserProfile>) => {
-    setIsSaving(true);
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      });
-      const updatedProfile = await response.json();
-      setProfile(updatedProfile);
-    } catch (error) {
-      console.error('Error saving profile:', error);
-    } finally {
-      setIsSaving(false);
-    }
+  const handleProfileUpdate = (updates: Partial<typeof profile>) => {
+    debouncedUpdate(updates);
   };
 
-  const setActiveDeck = async (deckId: string) => {
-    if (!profile) return;
-
-    try {
-      await saveProfile({ ...profile, activeDeckId: deckId });
-    } catch (error) {
-      console.error('Error setting active deck:', error);
-    }
-  };
-
-  if (isLoading) {
-    return <div className={styles.loading}>Loading profile...</div>;
-  }
-
-  if (!profile) {
-    return <div className={styles.error}>Error loading profile</div>;
-  }
+  if (isLoading) return <div className={styles.loading}>Loading profile...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
+  if (!profile) return <div className={styles.error}>Profile not found</div>;
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
+      <div className={styles.mobileHeader}>
+        <button
+          className={styles.menuToggle}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? 'Close Menu' : 'Open Menu'}
+        </button>
+        <h1 className={styles.mobileTitle}>{profile.username}</h1>
+      </div>
+
+      <aside className={clsx(styles.sidebar, isMobileMenuOpen && styles.sidebarOpen)}>
         <div className={styles.userInfo}>
-          <div className={styles.avatar}>{profile.username[0].toUpperCase()}</div>
+          <div className={styles.avatar}>{profile.username?.[0]?.toUpperCase() || '?'}</div>
           <h2 className={styles.username}>{profile.username}</h2>
           <div className={styles.stats}>
             Games: {profile.statistics.gamesPlayed} | Wins: {profile.statistics.wins}
@@ -86,23 +74,41 @@ export default function ProfilePage() {
         <nav className={styles.nav}>
           <button
             className={clsx(styles.navButton, activeTab === 'profile' && styles.active)}
-            onClick={() => setActiveTab('profile')}
+            onClick={() => {
+              setActiveTab('profile');
+              setIsMobileMenuOpen(false);
+            }}
           >
             Profile
           </button>
           <button
             className={clsx(styles.navButton, activeTab === 'decks' && styles.active)}
-            onClick={() => setActiveTab('decks')}
+            onClick={() => {
+              setActiveTab('decks');
+              setIsMobileMenuOpen(false);
+            }}
           >
             Deck Management
           </button>
           <button
             className={clsx(styles.navButton, activeTab === 'settings' && styles.active)}
-            onClick={() => setActiveTab('settings')}
+            onClick={() => {
+              setActiveTab('settings');
+              setIsMobileMenuOpen(false);
+            }}
           >
             Settings
           </button>
         </nav>
+
+        <div className={styles.controls}>
+          <button
+            className={clsx(styles.controlButton, styles.backButton)}
+            onClick={() => navigate('/')}
+          >
+            Return to Main
+          </button>
+        </div>
       </aside>
 
       <main className={styles.content}>
@@ -114,30 +120,25 @@ export default function ProfilePage() {
               <input
                 type="text"
                 className={styles.input}
-                value={profile.username}
-                onChange={(e) => saveProfile({ ...profile, username: e.target.value })}
+                defaultValue={profile.username}
+                onChange={(e) => handleProfileUpdate({ username: e.target.value })}
               />
             </div>
-            {/* Add more profile fields as needed */}
           </section>
         )}
 
         {activeTab === 'decks' && (
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Your Decks</h2>
+            <h2 className={styles.sectionTitle}>Test Deck</h2>
             <div className={styles.deckGrid}>
-              {decks.map((deck) => (
-                <div
-                  key={deck.id}
-                  className={clsx(
-                    styles.deckCard,
-                    deck.id === profile.activeDeckId && styles.active,
-                  )}
-                  onClick={() => setActiveDeck(deck.id)}
-                >
-                  <h3 className={styles.deckName}>{deck.name}</h3>
-                  <div className={styles.deckMeta}>
-                    {deck.cards.length} cards | {deck.format}
+              {testDeck.map((card) => (
+                <div key={card.id} className={styles.deckCard}>
+                  <h3 className={styles.cardName}>{card.name}</h3>
+                  <div className={styles.cardType}>
+                    {card.type} - {card.layer}
+                  </div>
+                  <div className={styles.cardCost}>
+                    Cost: {card.cost.material}● {card.cost.mind}○
                   </div>
                 </div>
               ))}
@@ -152,10 +153,9 @@ export default function ProfilePage() {
               <label className={styles.label}>Theme</label>
               <select
                 className={styles.input}
-                value={profile.preferences.theme}
+                defaultValue={profile.preferences.theme}
                 onChange={(e) =>
-                  saveProfile({
-                    ...profile,
+                  handleProfileUpdate({
                     preferences: { ...profile.preferences, theme: e.target.value as any },
                   })
                 }
@@ -169,10 +169,9 @@ export default function ProfilePage() {
               <label className={styles.label}>Card Back</label>
               <select
                 className={styles.input}
-                value={profile.preferences.cardBack}
+                defaultValue={profile.preferences.cardBack}
                 onChange={(e) =>
-                  saveProfile({
-                    ...profile,
+                  handleProfileUpdate({
                     preferences: { ...profile.preferences, cardBack: e.target.value },
                   })
                 }

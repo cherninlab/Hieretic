@@ -1,9 +1,0 @@
-﻿.app {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  font-family: 'Arial', sans-serif;
-}

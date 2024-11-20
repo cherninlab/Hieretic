@@ -1,0 +1,129 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardSlot {
+  margin: 0;
+}
+
+.cardSlot:hover {
+  z-index: 10;
+}
+
+.card {
+  position: relative;
+  width: 180px;
+  background: linear-gradient(45deg, var(--surface) 0%, var(--background-alt) 100%);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.playable {
+  cursor: pointer;
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
+}
+
+.playable:hover {
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+}
+
+.unplayable {
+  cursor: not-allowed;
+  opacity: 0.7;
+  filter: grayscale(30%);
+}
+
+.cardContent {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 0.75rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cardName {
+  color: var(--gold-primary);
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.cardType {
+  color: var(--gold-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cardCost {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.costItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--gold-secondary);
+  font-size: 0.875rem;
+}
+
+.costItem.material {
+  color: #c17d11;
+} /* Brown for material */
+.costItem.mind {
+  color: #729fcf;
+} /* Blue for mind */
+
+.cardArt {
+  position: relative;
+  height: 120px;
+  margin: 0.5rem -0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardStats {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin-top: auto;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--gold-secondary);
+  text-transform: uppercase;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  color: var(--gold-primary);
+  font-weight: bold;
+}

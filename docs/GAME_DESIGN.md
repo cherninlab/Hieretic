@@ -43,32 +43,12 @@ The domain of psychological manipulation and control.
 - **Dream Weaver**: Create illusion copies
 - **Mental Fortress**: Protect from mind control
 
-#### Void Layer
-
-The domain of fundamental laws and abstract concepts, where reality's rules can be rewritten.
-
-**Key Mechanics:**
-
-- Law manipulation
-- Conceptual transformation
-- Balance alteration
-- Universal rule modification
-
-**Example Cards:**
-
-- **Law Bender**: Swap all attack/defense values
-- **Reality Anchor**: Lock current game state for 1 turn
-- **Void Mirror**: Reflect next played effect
-- **Concept Breaker**: Redefine a unit's basic properties
-- **Null Zone**: Temporarily suspend active effects
-
 ### Resource System
 
 Each layer maintains its own global resource pool:
 
 - **Material**: Physical essence (●)
 - **Mind**: Mental energy (○)
-- **Void**: Reality fragments (◊)
 
 Resources are shared within each layer and refresh each turn. Some cards can temporarily modify resource generation or availability.
 
@@ -127,6 +107,7 @@ Resources are shared within each layer and refresh each turn. Some cards can tem
    - More flexible but more complex to use
 
 3. **Universal**
+
    - Basic effects that work in any layer
    - Generally weaker but more reliable
 
@@ -147,6 +128,7 @@ Resources are shared within each layer and refresh each turn. Some cards can tem
    - Deplete opponent's deck
 
 2. **Special**
+
    - Layer-specific victory conditions
    - Alternative win conditions through specific cards
 
@@ -171,3 +153,19 @@ Resources are shared within each layer and refresh each turn. Some cards can tem
 - Card synergy limits
 - First player advantage mitigation
 - Cross-layer interaction balance
+
+## Technical Architecture
+
+### Frontend
+
+- **Framework**: React
+- **State Management**: Zustand
+- **Routing**: React Router
+- **Animations**: Framer Motion
+- **Styling**: CSS Modules
+
+### Backend
+
+- **Environment**: Cloudflare Workers
+- **Storage**: KV Namespaces for game state, user profiles, and decks
+- **Assets**: R2 Buckets for storing card artwork
