@@ -1,0 +1,76 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background: var(--background);
+  position: relative;
+  isolation: isolate;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/assets/backgrounds/game-bg.jpg');
+  background-size: cover;
+  z-index: -2;
+  filter: brightness(0.2);
+}
+
+.loading {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+}
+
+.loadingText {
+  color: var(--gold-primary);
+  font-size: 1.5rem;
+  animation: pulse 1.5s infinite;
+}
+
+.error {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background: var(--background);
+}
+
+.errorText {
+  color: var(--blood-red);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.returnButton {
+  padding: 1rem 2rem;
+  font-family: inherit;
+  font-size: 1.25rem;
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--gold-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.returnButton:hover {
+  background: rgba(201, 162, 39, 0.2);
+  border-color: var(--gold-primary);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}

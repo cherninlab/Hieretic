@@ -1,0 +1,172 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background: black;
+}
+
+.sidebar {
+  width: 300px;
+  background: var(--surface);
+  padding: 2rem;
+  border-right: 1px solid var(--border);
+}
+
+.userInfo {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  background: var(--gold-primary);
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: var(--background);
+}
+
+.username {
+  font-size: 1.5rem;
+  color: var(--gold-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stats {
+  color: var(--gold-secondary);
+  font-size: 0.875rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.navButton {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--foreground);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border);
+}
+
+.navButton.active {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  color: var(--gold-primary);
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  color: var(--gold-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+}
+
+.saveButton {
+  padding: 0.75rem 2rem;
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--gold-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.saveButton:hover {
+  background: rgba(201, 162, 39, 0.2);
+  border-color: var(--gold-primary);
+}
+
+/* Deck management specific styles */
+.deckGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.deckCard {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deckCard:hover {
+  border-color: var(--gold-primary);
+  transform: translateY(-2px);
+}
+
+.deckCard.active {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: var(--gold-primary);
+}
+
+.deckName {
+  color: var(--gold-primary);
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.deckMeta {
+  color: var(--gold-secondary);
+  font-size: 0.875rem;
+}

@@ -1,0 +1,34 @@
+name = "hieretic"
+main = "src/worker/index.ts"
+compatibility_date = "2023-12-18"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "PLAYER_QUEUE"
+id = "key1"
+
+[[kv_namespaces]]
+binding = "GAME_STATE"
+id = "key2"
+
+[[kv_namespaces]]
+binding = "USER_DATA"
+id = "key3"
+
+[[kv_namespaces]]
+binding = "DECKS"
+id = "key4"
+
+[[kv_namespaces]]
+binding = "CARDS"
+id = "key5"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "production"
+
+# Development Variables
+[env.development]
+name = "hieretic-dev"
+[env.development.vars]
+ENVIRONMENT = "development"

@@ -1,0 +1,40 @@
+# Build
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env*
+!.env.example
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.export.*
+
+# Logs
+logs/
+*.log
+
+# Testing
+coverage/
+
+# Mobile
+*.keystore
+!debug.keystore
+*.jsbundle
+
+# System
+.DS_Store
+Thumbs.db
+
+#Cloudflare
+wrangler.toml
+.wrangler
