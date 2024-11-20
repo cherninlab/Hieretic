@@ -1,0 +1,73 @@
+.container {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem;
+}
+
+.layerSelector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.layerButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--background-alt);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.layerButton:hover {
+  background: var(--surface-hover);
+  border-color: var(--gold-primary);
+}
+
+.layerButton.active {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+.resourceIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--gold-primary);
+}
+
+.resourceCount {
+  font-size: 0.875rem;
+  color: var(--gold-secondary);
+}
+
+.resourceDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resourceInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--background-alt);
+  border: 1px solid var(--border);
+}
+
+.resourceLabel {
+  color: var(--gold-secondary);
+  font-size: 0.875rem;
+}
+
+.resourceValue {
+  color: var(--gold-primary);
+  font-size: 0.875rem;
+}

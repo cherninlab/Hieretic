@@ -1,0 +1,22 @@
+.cardPreview {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cardImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.noPreview {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  color: var(--gold-secondary);
+  font-size: 1.25rem;
+}

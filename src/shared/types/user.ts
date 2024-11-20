@@ -23,7 +23,7 @@ export interface Deck {
   id: string;
   name: string;
   cards: string[]; // Array of card IDs
-  created: number;
-  updated: number;
-  format: 'standard' | 'custom';
+  created?: number;
+  updated?: number;
+  format?: 'standard' | 'custom';
 }

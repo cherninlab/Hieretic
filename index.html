@@ -1,12 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HIERETIC</title>
+    <title>Hieretic</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #060606;
+      }
+
+      .preloader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 0.3s linear;
+        font-family: 'EB Garamond', serif;
+        will-change: opcacity;
+      }
+
+      .preloader.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .preloader-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        color: #dbdbdb;
+      }
+
+      .loading-sigil {
+        width: 80px;
+        height: 80px;
+        border: 2px solid rgba(201, 162, 39, 0.1);
+        border-top-color: #c9a227;
+        border-radius: 50%;
+        animation: sigil-spin 1s linear infinite;
+        transform: rotate(0deg);
+      }
+
+      @keyframes sigil-spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #root {
+        opacity: 0;
+        transition: opacity 0.3s 1s linear;
+      }
+
+      #root.visible {
+        opacity: 1;
+      }
+
+      /* Hide initial content flash */
+      .js-loading * {
+        display: none;
+      }
+    </style>
   </head>
-  <body>
+  <body class="js-loading">
+    <div id="preloader" class="preloader">
+      <div class="preloader-content">
+        <div class="loading-sigil"></div>
+      </div>
+    </div>
+
     <div id="root"></div>
+
+    <script>
+      // Remove no-js class
+      document.body.classList.remove('js-loading');
+
+      // Handle loading sequence
+      window.addEventListener('load', function () {
+        const preloader = document.getElementById('preloader');
+        const root = document.getElementById('root');
+
+        if (preloader && root) {
+          // Add minimal delay for loading experience
+          setTimeout(() => {
+            // Fade out preloader
+            preloader.classList.add('fade-out');
+
+            // Fade in root content
+            root.classList.add('visible');
+
+            // Remove preloader after transition
+            setTimeout(() => {
+              preloader.remove();
+            }, 800); // Match transition duration
+          }, 1000); // Minimum display time
+        }
+      });
+    </script>
     <script type="module" src="/src/client/main.tsx"></script>
   </body>
 </html>

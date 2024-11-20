@@ -1,0 +1,53 @@
+.cardList {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  color: var(--gold-primary);
+  margin-bottom: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.cardItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardPreviewWrapper {
+  width: 100%;
+  background: var(--background-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading {
+  color: var(--gold-secondary);
+  text-align: center;
+  padding: 2rem;
+}
+
+.error {
+  color: var(--blood-red);
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid var(--blood-red);
+  border-radius: 4px;
+  background: rgba(181, 0, 0, 0.1);
+}

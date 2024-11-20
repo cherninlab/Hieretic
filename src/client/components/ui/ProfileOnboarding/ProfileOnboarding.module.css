@@ -1,0 +1,149 @@
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Noise texture overlay */
+.container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  z-index: 999;
+  filter: saturate(0);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: min(90vw, 400px);
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.progress {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 3;
+}
+
+.progressDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.progressDot.active {
+  background: var(--white-secondary);
+}
+
+.step {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.stepTitle {
+  font-family: var(--serif-font-family);
+  color: var(--white-secondary);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.deckChoices {
+  margin-bottom: 1rem;
+}
+
+.deckOption {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deckOption:hover {
+  border-color: var(--gold-primary);
+}
+
+.deckOption.selected {
+  border-color: var(--gold-primary);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.deckOption h3 {
+  font-family: var(--serif-font-family);
+  color: var(--gold-primary);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.deckOption p {
+  color: var(--gold-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  font-family: var(--serif-font-family);
+}
+
+.deckPreview {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  mask-image: linear-gradient(to right, black 70%, transparent);
+}
+
+.skipButton {
+  background: transparent;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.error {
+  color: var(--blood-red);
+  text-align: center;
+  font-size: 0.875rem;
+  margin: 1rem 0;
+  font-family: var(--serif-font-family);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Landscape mode */
+@media (orientation: landscape) and (max-height: 600px) {
+  .content {
+    padding: 0.5rem;
+  }
+
+  .deckPreview {
+    max-height: 120px;
+  }
+}

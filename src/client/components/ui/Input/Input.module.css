@@ -1,0 +1,15 @@
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-family: var(--serif-font-family);
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  margin-bottom: 0.75rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+}
