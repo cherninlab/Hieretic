@@ -1,0 +1,95 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: min(1.25rem, 4vw);
+  transition: all 0.2s ease;
+  position: relative;
+  border: none;
+}
+
+.sectionTitle {
+  font-family: var(--serif-font-family);
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  color: var(--gold-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Top-left corner */
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+/* Top-right corner */
+.section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+/* Bottom corners */
+.cornerBottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  pointer-events: none;
+}
+
+.cornerBottom::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.cornerBottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+/* Hover states */
+.section:hover::before,
+.section:hover::after,
+.section:hover .cornerBottom::before,
+.section:hover .cornerBottom::after {
+  border-color: var(--gold-primary);
+}
+
+/* No border variant */
+.withoutBorder::before,
+.withoutBorder::after,
+.withoutBorder .cornerBottom::before,
+.withoutBorder .cornerBottom::after {
+  display: none;
+}

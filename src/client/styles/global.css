@@ -1,9 +1,9 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
 :root {
-  --background: #0a0a0f;
-  --background-alt: #12121a;
-  --foreground: #e1e1e6;
+  --background: #0d0d0d;
+  --background-alt: #121212;
+  --foreground: #dbdbdb;
 
   /* Theme colors */
   --gold-primary: #c9a227;
@@ -11,18 +11,19 @@
   --purple-dark: #2c1810;
   --purple-light: #4a2343;
   --white: #ffffff;
-  --white-secondary: #b3b3b3;
-  --blood-red: #b50000;
+  --white-secondary: #dbdbdb;
+  --blood-red: #e01717;
   --blood-red-hover: #8b0000;
 
   /* UI colors */
   --surface: #020202;
   --surface-hover: #0d0d0d;
-  --border: rgba(201, 162, 39, 0.15);
-  --border-hover: rgba(201, 162, 39, 0.3);
+  --border: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.3);
 
   /* Font */
-  --serif-font-family: 'Cinzel', 'Times New Roman', Times, serif;
+  --sans-serif-font-family: 'Roboto', 'Arial', sans-serif;
+  --serif-font-family: 'EB Garamond', 'Times New Roman', Times, serif;
 }
 
 * {
@@ -31,13 +32,25 @@
   box-sizing: border-box;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-family: var(--sans-serif-font-family);
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Cinzel', serif;
-  min-height: 100vh;
-  line-height: 1.5;
+  height: 100vh;
+  position: relative;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
+  position: relative;
 }
 
 /* Custom scrollbar */

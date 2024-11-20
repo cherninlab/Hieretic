@@ -1,14 +1,49 @@
 .container {
   display: flex;
   height: 100vh;
-  background: black;
+  background: var(--background);
+  position: relative;
+  overflow: hidden;
+}
+
+.mobileHeader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1rem;
+  z-index: 100;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menuToggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--gold-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mobileTitle {
+  font-size: 1.25rem;
+  color: var(--gold-primary);
 }
 
 .sidebar {
   width: 300px;
+  min-width: 300px;
+  height: 100vh;
   background: var(--surface);
   padding: 2rem;
   border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
 }
 
 .userInfo {
@@ -46,17 +81,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .navButton {
-  padding: 0.75rem 1rem;
   text-align: left;
   background: none;
   border: 1px solid transparent;
   color: var(--foreground);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .navButton:hover {
@@ -116,29 +148,10 @@
   border-color: var(--gold-primary);
 }
 
-.saveButton {
-  padding: 0.75rem 2rem;
-  background: rgba(201, 162, 39, 0.1);
-  color: var(--gold-primary);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-.saveButton:hover {
-  background: rgba(201, 162, 39, 0.2);
-  border-color: var(--gold-primary);
-}
-
-/* Deck management specific styles */
 .deckGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
 }
 
 .deckCard {
@@ -146,7 +159,6 @@
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1rem;
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -155,18 +167,97 @@
   transform: translateY(-2px);
 }
 
-.deckCard.active {
-  background: rgba(201, 162, 39, 0.1);
-  border-color: var(--gold-primary);
-}
-
-.deckName {
+.cardName {
   color: var(--gold-primary);
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
 }
 
-.deckMeta {
+.cardType {
   color: var(--gold-secondary);
   font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.cardCost {
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.controls {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .mobileHeader {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: -300px;
+    bottom: 0;
+    z-index: 90;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebarOpen {
+    transform: translateX(300px);
+  }
+
+  .content {
+    margin-top: 60px;
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .deckGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .deckGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 0.75rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .sidebar {
+    padding: 1rem;
+  }
+
+  .userInfo {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .nav {
+    gap: 0.25rem;
+  }
+
+  .navButton {
+    padding: 0.5rem 0.75rem;
+  }
 }

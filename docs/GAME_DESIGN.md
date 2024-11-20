@@ -1,173 +1,233 @@
-# HIERETIC - Game Design Document
+# Hieretic: Game Design Document
 
-## Core Mechanics
+> [!IMPORTANT]
+> This document serves as the authoritative reference for Hieretic's game mechanics and systems. All game features must align with these specifications.
 
-### Layer System
-
-The game operates across three distinct layers of reality, each with its own mechanics and strategic focus.
-
-#### Material Layer
-
-The realm of physical manifestation and transformation.
-
-**Key Mechanics:**
-
-- Direct damage and healing effects
-- Physical transformations
-- Unit enhancement
-
-**Example Cards:**
-
-- **Blood Weaver**: Transform health into temporary power
-- **Bone Sculptor**: Transform unit's defense into attack
-- **Stone Heart**: Grant immunity to direct damage
-- **Matter Shifter**: Change unit's base stats
-- **Physical Anchor**: Lock a unit's stats
-
-#### Mind Layer
-
-The domain of psychological manipulation and control.
-
-**Key Mechanics:**
-
-- Unit control and corruption
-- Memory and knowledge effects
-- Psychological manipulation
-- Information gathering
-
-**Example Cards:**
-
-- **Memory Thief**: Copy opponent's unit abilities
-- **Mind Fracture**: Split unit into two weaker versions
-- **Thought Parasite**: Take control of opponent's unit
-- **Dream Weaver**: Create illusion copies
-- **Mental Fortress**: Protect from mind control
-
-#### Void Layer
-
-The domain of fundamental laws and abstract concepts, where reality's rules can be rewritten.
-
-**Key Mechanics:**
-
-- Law manipulation
-- Conceptual transformation
-- Balance alteration
-- Universal rule modification
-
-**Example Cards:**
-
-- **Law Bender**: Swap all attack/defense values
-- **Reality Anchor**: Lock current game state for 1 turn
-- **Void Mirror**: Reflect next played effect
-- **Concept Breaker**: Redefine a unit's basic properties
-- **Null Zone**: Temporarily suspend active effects
+## Core Game Systems
 
 ### Resource System
 
-Each layer maintains its own global resource pool:
+| Resource | Symbol | Generation | Max Pool | Primary Use           |
+| -------- | ------ | ---------- | -------- | --------------------- |
+| Material | 🜔      | +1/turn    | 10       | Physical entities     |
+| Mind     | 🜕      | +1/turn    | 10       | Psychological effects |
 
-- **Material**: Physical essence (●)
-- **Mind**: Mental energy (○)
-- **Void**: Reality fragments (◊)
+> [!NOTE]
+> Most cards require mixed resources, creating natural strategic tension in resource allocation.
 
-Resources are shared within each layer and refresh each turn. Some cards can temporarily modify resource generation or availability.
+### Player Stats
 
-### Combat Mechanics
+| Stat            | Value | Notes                   |
+| --------------- | ----- | ----------------------- |
+| Starting Health | 30    | Damage is NOT mitigated |
+| Hand Size       | 5     | +1 card per turn        |
+| Field Slots     | 3     | Per layer               |
+| Max Resources   | 10    | Per type                |
 
-1. **Unit Placement**
+### Card Stats
 
-   - Four slots per player
-   - Units can interact across different layers
-   - Position affects targeting and effect ranges
+| Stat    | Symbol | Range | Notes               |
+| ------- | ------ | ----- | ------------------- |
+| Attack  | 🜂      | 1-3   | Base value          |
+| Defense | 🜄      | 1-4   | Damage reduces this |
 
-2. **Layer Interaction**
+## Cost Structure
 
-   - Effects can cascade across layers
-   - Some units exist in multiple layers simultaneously
-   - Layer priority affects resolution order
+### Single Resource Cards
 
-3. **Turn Structure**
+| Cost     | Power Level | Typical Stats  | Frequency |
+| -------- | ----------- | -------------- | --------- |
+| 1🜔 or 1🜕 | Basic       | 1🜂/2🜄 or 2🜂/1🜄 | 20%       |
+| 2🜔 or 2🜕 | Moderate    | 2🜂/2🜄          | 15%       |
+| 3🜔 or 3🜕 | Strong      | 2🜂/3🜄 or 3🜂/2🜄 | 10%       |
 
-   - Draw Phase: Draw card(s)
-   - Main Phase: Play cards and activate effects
-   - Combat Phase: Units attack
-   - End Phase: Resolve end-of-turn effects
+### Mixed Resource Cards
 
-## Card Design
+| Cost         | Power Level | Typical Stats  | Frequency |
+| ------------ | ----------- | -------------- | --------- |
+| 1🜔1🜕         | Enhanced    | 2🜂/2🜄 + Effect | 25%       |
+| 2🜔1🜕 or 1🜔2🜕 | Strong      | 2🜂/3🜄 + Effect | 20%       |
+| 2🜔2🜕         | Powerful    | 3🜂/3🜄 + Effect | 10%       |
 
-### Card Types
+> [!TIP]
+> Mixed resource cards should have effects that justify their more demanding costs.
 
-1. **Units**
+## Game Flow
 
-   - Base Stats (Attack/Defense)
-   - Layer Alignment
-   - Special Abilities
+### Turn Structure
 
-2. **Effects**
+1. **Start Phase**
 
-   - Immediate Impact
-   - Duration
-   - Layer Requirements
+   - Gain 1🜔 and 1🜕
+   - Draw 1 card
 
-3. **Rituals**
+2. **Main Phase**
 
-   - Multi-turn Effects
-   - Layer-spanning Impacts
+   - Play cards
+   - Activate effects
+   - Switch layers
 
-### Card Categories
+3. **Combat Phase**
 
-1. **Layer-Specific**
+   - Declare attacks
+   - Resolve combat
 
-   - Cards that only work within their aligned layer
-   - Strong effects but limited flexibility
+4. **End Phase**
+   - Resolve end effects
+   - Check win conditions
 
-2. **Multi-Layer**
+> [!IMPORTANT]
+> Players must explicitly end each phase, ensuring intentional play patterns.
 
-   - Cards that interact across layers
-   - More flexible but more complex to use
+### Combat Resolution
 
-3. **Universal**
-   - Basic effects that work in any layer
-   - Generally weaker but more reliable
+1. Attacker declares target
+2. Defender may activate responses
+3. Compare 🜂 vs 🜄
+4. Apply damage
+5. Trigger post-combat effects
 
-## Strategic Elements
+## Layer System
 
-### Deck Building
+### Material Layer (🜔)
 
-- Minimum 30 cards
-- Maximum 3 copies of any card
-- Layer balance requirements
-- Synergy planning
+- Physical entities and effects
+- Direct damage focus
+- Unit-to-unit combat
 
-### Win Conditions
+### Mind Layer (🜕)
+
+- Psychological effects
+- Control mechanics
+- Indirect damage
+
+> [!NOTE]
+> Units can only attack within their layer unless modified by effects.
+
+## Card Types
+
+### Units
+
+```
+┌────────────────┐
+│ Name        1🜔 │
+│ ═══════════════│
+│     Art        │
+│                │
+│ ───────────────│
+│ Effect text    │
+│                │
+│         2🜂/2🜄 │
+└────────────────┘
+```
+
+### Effects
+
+```
+┌────────────────┐
+│ Name      1🜔1🜕│
+│ ═══════════════│
+│     Art        │
+│                │
+│ ───────────────│
+│ Effect text    │
+│                │
+└────────────────┘
+```
+
+### Rituals
+
+```
+┌────────────────┐
+│ Name      2🜔2🜕│
+│ ═══════════════│
+│     Art        │
+│                │
+│ ───────────────│
+│ Effect text    │
+│ Duration: X    │
+└────────────────┘
+```
+
+## Win Conditions
 
 1. **Primary**
 
-   - Reduce opponent's health to 0
-   - Deplete opponent's deck
+   - Reduce opponent health to 0
+   - Opponent cannot draw cards
 
 2. **Special**
-   - Layer-specific victory conditions
-   - Alternative win conditions through specific cards
+   - Specific ritual completions
+   - Card-defined conditions
 
-## Future Development
+## Game Phases
 
-### Planned Features
+### Early Game (Turns 1-4)
 
-1. **Content Expansions**
+- Resource building
+- Board establishment
+- Layer control
 
-   - New card sets
-   - Additional layers
-   - Special game modes
+### Mid Game (Turns 5-9)
 
-2. **Competitive Features**
-   - Ranked ladder system
-   - Tournament support
-   - Seasonal content
+- Strategic pressure
+- Resource manipulation
+- Cross-layer threats
 
-### Balance Considerations
+### Late Game (Turns 10+)
 
-- Layer power balance
-- Card synergy limits
-- First player advantage mitigation
-- Cross-layer interaction balance
+- Win condition execution
+- Resource maximization
+- Combination plays
+
+> [!TIP]
+> Games should typically conclude between turns 12-15, with clear strategic progression through each phase.
+
+## Effect Categories
+
+| Type       | Primary Layer | Description           |
+| ---------- | ------------- | --------------------- |
+| Damage     | 🜔             | Reduce health/defense |
+| Control    | 🜕             | Affect unit behavior  |
+| Buff       | Both          | Enhance stats         |
+| Debuff     | Both          | Reduce stats          |
+| Transform  | 🜔             | Change unit type      |
+| Manipulate | 🜕             | Affect card locations |
+
+## Balance Guidelines
+
+### Unit Stats by Cost
+
+| Cost | 🜂 Range | 🜄 Range | Effect Power |
+| ---- | ------- | ------- | ------------ |
+| 1    | 1-2     | 1-2     | Minor        |
+| 2    | 2-3     | 2-3     | Moderate     |
+| 3    | 2-3     | 2-4     | Strong       |
+| 4+   | 3-4     | 3-4     | Powerful     |
+
+### Effect Power by Cost
+
+| Cost | Direct Damage | Control Duration | Buff Amount |
+| ---- | ------------- | ---------------- | ----------- |
+| 1    | 1             | 1 turn           | +1          |
+| 2    | 2             | 2 turns          | +2          |
+| 3    | 3             | 2 turns          | +2/+2       |
+| 4+   | 4             | 3 turns          | +3/+3       |
+
+> [!IMPORTANT]
+> All effects must be clearly resolvable with minimal rules interpretation required.
+
+## Deck Construction
+
+### Requirements
+
+- Minimum 30 cards
+- Maximum 3 copies per card
+- At least 10 units
+
+### Recommendations
+
+- 40-50% units
+- 30-40% effects
+- 10-20% rituals
+- Balance between 🜔 and 🜕 costs

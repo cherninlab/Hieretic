@@ -43,7 +43,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'game-core': ['@client/components/game/Card'],
+          'game-core': ['@client/components/game/GameBoard'],
         },
       },
     },

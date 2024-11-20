@@ -1,0 +1,164 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--surface);
+  flex: 1;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  color: var(--gold-primary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.effectsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.emptyState {
+  color: var(--gold-secondary);
+  font-style: italic;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px dashed var(--border);
+  background: var(--background-alt);
+}
+
+.effectCard {
+  background: var(--background-alt);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.effectCard:hover {
+  transform: translateY(-2px);
+}
+
+.effectHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.effectIcon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.effectSource {
+  color: var(--gold-primary);
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.effectDuration {
+  color: var(--gold-secondary);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.effectDetails {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.effectType {
+  color: var(--gold-primary);
+}
+
+.effectValue {
+  color: var(--foreground);
+}
+
+.effectTarget {
+  color: var(--gold-secondary);
+  font-size: 0.75rem;
+}
+
+.affectedCards {
+  font-size: 0.75rem;
+  color: var(--gold-secondary);
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Effect type-specific styles */
+.damage {
+  border-left: 3px solid var(--blood-red);
+}
+
+.heal {
+  border-left: 3px solid #4caf50;
+}
+
+.buff {
+  border-left: 3px solid #2196f3;
+}
+
+.debuff {
+  border-left: 3px solid #ff9800;
+}
+
+.control {
+  border-left: 3px solid #9c27b0;
+}
+
+.transform {
+  border-left: 3px solid #00bcd4;
+}
+
+.summon {
+  border-left: 3px solid #e91e63;
+}
+
+/* Animation for new effects */
+@keyframes effectAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.effectCard {
+  animation: effectAppear 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .effectCard {
+    padding: 0.5rem;
+  }
+
+  .effectDetails {
+    grid-template-columns: 1fr;
+  }
+}

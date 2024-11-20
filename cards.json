@@ -1,0 +1,98 @@
+[
+  {
+    "key": "card:warm_welcome",
+    "value": "{\"id\":\"warm_welcome\",\"name\":\"Warm Welcome\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":1,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"warm_welcome.png\"}"
+  },
+  {
+    "key": "card:here_to_help",
+    "value": "{\"id\":\"here_to_help\",\"name\":\"Here To Help\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":1,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"here_to_help.png\"}"
+  },
+  {
+    "key": "card:stair_people",
+    "value": "{\"id\":\"stair_people\",\"name\":\"Stair People\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":1,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":1,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"stair_people.png\"}"
+  },
+  {
+    "key": "card:who_am_i",
+    "value": "{\"id\":\"who_am_i\",\"name\":\"Who Am I\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":1,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":1,\"defense\":2,\"abilities\":[],\"artworkUrl\":\"who_am_i.png\"}"
+  },
+  {
+    "key": "card:ill_wait",
+    "value": "{\"id\":\"ill_wait\",\"name\":\"I'll Wait\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":2,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":2,\"abilities\":[],\"artworkUrl\":\"ill_wait.png\"}"
+  },
+  {
+    "key": "card:third_door",
+    "value": "{\"id\":\"third_door\",\"name\":\"Third Door\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":2,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":1,\"defense\":3,\"abilities\":[],\"artworkUrl\":\"third_door.png\"}"
+  },
+  {
+    "key": "card:recurring_visitor",
+    "value": "{\"id\":\"recurring_visitor\",\"name\":\"Recurring Visitor\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":2,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"recurring_visitor.png\"}"
+  },
+  {
+    "key": "card:keep_watching",
+    "value": "{\"id\":\"keep_watching\",\"name\":\"Keep Watching\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":2,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":3,\"abilities\":[],\"artworkUrl\":\"keep_watching.png\"}"
+  },
+  {
+    "key": "card:familiar_stranger",
+    "value": "{\"id\":\"familiar_stranger\",\"name\":\"Familiar Stranger\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":3,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":3,\"abilities\":[],\"artworkUrl\":\"familiar_stranger.png\"}"
+  },
+  {
+    "key": "card:basement",
+    "value": "{\"id\":\"basement\",\"name\":\"Basement\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":3,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":4,\"defense\":2,\"abilities\":[],\"artworkUrl\":\"basement.png\"}"
+  },
+  {
+    "key": "card:it_wasnt_me",
+    "value": "{\"id\":\"it_wasnt_me\",\"name\":\"It Wasn't Me\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":3,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":4,\"abilities\":[],\"artworkUrl\":\"it_wasnt_me.png\"}"
+  },
+  {
+    "key": "card:skin_tight",
+    "value": "{\"id\":\"skin_tight\",\"name\":\"Skin Tight\",\"type\":\"unit\",\"layer\":\"material\",\"cost\":{\"material\":3,\"mind\":0},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":4,\"abilities\":[],\"artworkUrl\":\"skin_tight.png\"}"
+  },
+  {
+    "key": "card:wrong_name",
+    "value": "{\"id\":\"wrong_name\",\"name\":\"Wrong Name\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":1},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":0,\"abilities\":[],\"artworkUrl\":\"wrong_name.png\"}"
+  },
+  {
+    "key": "card:last_photo",
+    "value": "{\"id\":\"last_photo\",\"name\":\"Last Photo\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":1},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"last_photo.png\"}"
+  },
+  {
+    "key": "card:sleep_walker",
+    "value": "{\"id\":\"sleep_walker\",\"name\":\"Sleep Walker\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":1},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":1,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"sleep_walker.png\"}"
+  },
+  {
+    "key": "card:cold_hands",
+    "value": "{\"id\":\"cold_hands\",\"name\":\"Cold Hands\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":1},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":1,\"defense\":2,\"abilities\":[],\"artworkUrl\":\"cold_hands.png\"}"
+  },
+  {
+    "key": "card:identity",
+    "value": "{\"id\":\"identity\",\"name\":\"Identity\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":2},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"identity.png\"}"
+  },
+  {
+    "key": "card:never_born",
+    "value": "{\"id\":\"never_born\",\"name\":\"Never Born\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":2},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":1,\"defense\":3,\"abilities\":[],\"artworkUrl\":\"never_born.png\"}"
+  },
+  {
+    "key": "card:almost_human",
+    "value": "{\"id\":\"almost_human\",\"name\":\"Almost Human\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":2},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"almost_human.png\"}"
+  },
+  {
+    "key": "card:mother",
+    "value": "{\"id\":\"mother\",\"name\":\"Mother\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":2},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":1,\"abilities\":[],\"artworkUrl\":\"mother.png\"}"
+  },
+  {
+    "key": "card:always_awake",
+    "value": "{\"id\":\"always_awake\",\"name\":\"Always Awake\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":3},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":3,\"abilities\":[],\"artworkUrl\":\"always_awake.png\"}"
+  },
+  {
+    "key": "card:voice",
+    "value": "{\"id\":\"voice\",\"name\":\"Voice\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":3},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":4,\"defense\":2,\"abilities\":[],\"artworkUrl\":\"voice.png\"}"
+  },
+  {
+    "key": "card:family",
+    "value": "{\"id\":\"family\",\"name\":\"Family\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":3},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":2,\"defense\":4,\"abilities\":[],\"artworkUrl\":\"family.png\"}"
+  },
+  {
+    "key": "card:remember_me",
+    "value": "{\"id\":\"remember_me\",\"name\":\"Remember Me\",\"type\":\"unit\",\"layer\":\"mind\",\"cost\":{\"material\":0,\"mind\":3},\"rarity\":\"common\",\"set\":\"core\",\"releaseDate\":1733180040170,\"attack\":3,\"defense\":4,\"abilities\":[],\"artworkUrl\":\"remember_me.png\"}"
+  }
+]

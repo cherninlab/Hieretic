@@ -1,51 +1,97 @@
+# Hieretic
+
 <div align="center">
-  <img src="docs/assets/logo.png" width="200" alt="HIERETIC">
-  <p><em>Ancient knowledge comes with a price</em></p>
+  <img src="docs/assets/logo.png" alt="Hieretic" width="200"/>
+
+  
+  [![Development Status](https://img.shields.io/badge/status-pre--alpha-red.svg)](https://github.com/cherninlab/hieretic)
 </div>
 
 ## Overview
 
-HIERETIC is a strategic card game. Drawing inspiration from medieval grimoires.
+Hieretic is a psychological horror card game exploring the duality of existence through strategic gameplay. Players navigate between the Material (🜔) and Mind (🜕) layers, wielding powers that blur the boundaries between reality and madness.
 
-## Game Highlights
+### Core Mechanics
+- **Dual-Layer System**: Each player maintains parallel boards in both Material (🜔) and Mind (🜕) realms
+- **Resource Management**: Balance physical (🜔) and psychological (🜕) resources
+- **Strategic Depth**: Every card can affect multiple layers of reality
+- **Psychological Horror**: Deep thematic integration with gameplay mechanics
 
-- **Multi-Layer Strategy**: Battle across Material, Mind, and Void layers of reality
-- **Strategic Depth**: Master complex interactions between layers and effects
-- **Dynamic Gameplay**: Adapt your strategy as reality shifts during the game
-- **Rich Lore**: Immerse yourself in a world of occult knowledge and forbidden powers
+## Documentation
 
-For detailed information about game mechanics and design, see [GAME_DESIGN.md](docs/GAME_DESIGN.md)
+- [Game Design Document](docs/GAME_DESIGN.md) - Complete mechanical specifications
+- [API Reference](docs/API.md) - Technical implementation details
 
 ## Development
 
-### Quick Start
-
+### Prerequisites
 ```bash
+Node.js >= 18.x
+npm >= 9.x
+```
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/cherninlab/hieretic.git
+
 # Install dependencies
+cd hieretic
 npm install
+```
 
+### Development Server
+```bash
 # Start development server
-npm dev
-
-# Run local backend
-npm wrangler dev
+npm run dev
 
 # Run tests
 npm test
+
+# Build production version
+npm run build
 ```
 
-### Project Structure
+### Backend Services
+```bash
+# Start local backend
+npm run wrangler-dev
+
+# Deploy to production
+npm run wrangler-publish
+```
+
+## Project Structure
 
 ```
 src/
-├── client/        # Frontend application
+├── client/          # Frontend application
 │   ├── components/  # React components
+│   ├── hooks/       # Custom React hooks
 │   ├── pages/       # Route pages
-│   └── styles/      # Global styles
-├── shared/        # Shared types and utilities
-└── worker/        # Backend server code
+│   └── store/       # State management
+├── shared/          # Shared types and utilities
+│   ├── types/       # TypeScript definitions
+│   └── testing/     # Test data and utilities
+└── worker/          # Backend services
+    ├── api/         # API routes
+    └── core/        # Game logic
 ```
 
-<div align="center">
-  <sub>Built with ❤️ by Chernin Lab</sub>
-</div>
+## Core Systems
+
+### Layer Management
+```typescript
+interface LayerState {
+  material: BoardState;  // 🜔 Physical realm
+  mind: BoardState;      // 🜕 Psychological realm
+}
+```
+
+### Resource Types
+| Symbol | Name | Description |
+|--------|------|-------------|
+| 🜔 | Material | Physical essence |
+| 🜕 | Mind | Psychological energy |
+| 🜂 | Attack | Offensive power |
+| 🜄 | Defense | Protective barrier |

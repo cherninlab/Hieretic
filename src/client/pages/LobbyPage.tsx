@@ -1,74 +1,159 @@
-// src/client/pages/LobbyPage.tsx
+import { Button, ReturnToMainButton } from '@components/ui/Button';
+import { Modal } from '@components/ui/Modal';
+import type { UserProfile } from '@shared/types';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useGame } from '../hooks/useGame';
+import { useProfile } from '../hooks/useProfile';
 import styles from './LobbyPage.module.css';
+
+interface PlayerSlotProps {
+  profile?: UserProfile;
+  isReady?: boolean;
+  isHost?: boolean;
+}
+
+const PlayerSlot: React.FC<PlayerSlotProps> = ({ profile, isReady, isHost }) => {
+  return (
+    <div
+      className={clsx(styles.playerSlot, {
+        [styles.filled]: profile,
+        [styles.empty]: !profile,
+        [styles.ready]: isReady,
+      })}
+    >
+      {profile ? (
+        <div className={styles.playerInfo}>
+          <span className={styles.playerName}>{profile.username}</span>
+          {isHost && <span className={styles.hostBadge}>Host</span>}
+          <span className={styles.playerStatus}>{isReady ? 'Ready' : 'Not Ready'}</span>
+        </div>
+      ) : (
+        <span className={styles.emptySlot}>Awaiting player...</span>
+      )}
+    </div>
+  );
+};
 
 export default function LobbyPage() {
   const navigate = useNavigate();
   const { gameCode } = useParams<{ gameCode: string }>();
-  const [players, setPlayers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
+  // Get current user's profile
+  const { profile } = useProfile();
+
+  // Get and subscribe to game state
+  const { gameState, error, isLoading, startGame: startGameAction, leaveGame } = useGame(gameCode);
+
+  // Keep track of ready states
+  const [readyStates, setReadyStates] = useState<Record<string, boolean>>({});
+
+  // Handle navigation to game when it starts
   useEffect(() => {
-    const fetchGameState = async () => {
-      try {
-        const response = await fetch(`/api/get-game-state?gameCode=${gameCode}`);
-        const data = await response.json();
+    if (gameState?.status === 'active' && gameCode) {
+      navigate(`/game/${gameCode}`);
+    }
+  }, [gameState?.status, gameCode, navigate]);
 
-        if (Array.isArray(data.players)) {
-          setPlayers(data.players);
-        } else {
-          console.error('Unexpected data format:', data);
-          setPlayers([]);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching game state:', error);
-        setLoading(false);
-      }
-    };
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      setErrorMessage(error.message);
+      setShowErrorModal(true);
+    }
+  }, [error]);
 
-    fetchGameState();
-    const interval = setInterval(fetchGameState, 5000);
-    return () => clearInterval(interval);
-  }, [gameCode]);
+  // Copy game code to clipboard
+  const copyGameCode = useCallback(async () => {
+    if (!gameCode) return;
 
-  const copyGameCode = async () => {
     try {
-      await navigator.clipboard.writeText(gameCode || '');
+      await navigator.clipboard.writeText(gameCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      setErrorMessage('Failed to copy game code');
+      setShowErrorModal(true);
     }
-  };
+  }, [gameCode]);
 
-  const startGame = async () => {
+  // Toggle ready state
+  const toggleReady = useCallback(() => {
+    if (!profile?.id || !gameState) return;
+
+    setReadyStates((prev) => ({
+      ...prev,
+      [profile.id]: !prev[profile.id],
+    }));
+  }, [profile, gameState]);
+
+  // Start game handler
+  const handleStartGame = useCallback(async () => {
+    if (!gameCode || !gameState) return;
+
     try {
-      const response = await fetch('/api/start-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameCode }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        navigate(`/game/${gameCode}`);
-      }
+      await startGameAction(gameCode);
     } catch (error) {
-      console.error('Error starting game:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to start game');
+      setShowErrorModal(true);
     }
-  };
+  }, [gameCode, gameState, startGameAction]);
 
-  if (loading) {
+  // Leave game handler
+  const handleLeaveGame = useCallback(async () => {
+    try {
+      if (gameCode) {
+        await leaveGame(gameCode);
+      }
+      navigate('/');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to leave game');
+      setShowErrorModal(true);
+    }
+  }, [gameCode, leaveGame, navigate]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (gameCode && profile?.id) {
+        leaveGame(gameCode).catch(console.error);
+      }
+    };
+  }, [gameCode, profile, leaveGame]);
+
+  if (isLoading) {
     return (
       <div className={styles.loading}>
-        <span className={styles.loadingText}>Connecting to the ethereal plane...</span>
+        <div className={styles.loadingContent}>
+          <h2>Opening the portal...</h2>
+          <div className={styles.loadingSpinner} />
+        </div>
       </div>
     );
   }
+
+  if (!gameState || error) {
+    return (
+      <div className={styles.error}>
+        <div className={styles.errorContent}>
+          <h2>Failed to Join Game</h2>
+          <p>{error?.message || 'Game not found'}</p>
+          <ReturnToMainButton />
+        </div>
+      </div>
+    );
+  }
+
+  const isHost = profile?.id === gameState.createdBy;
+  const canStartGame =
+    isHost &&
+    Object.keys(gameState.playerProfiles).length === 2 &&
+    Object.values(readyStates).every((ready) => ready);
 
   return (
     <div className={styles.container}>
@@ -79,11 +164,10 @@ export default function LobbyPage() {
             <h2 className={styles.codeLabel}>Invite Code</h2>
             <div className={styles.codeDisplay}>
               <span className={styles.code}>{gameCode}</span>
-              <button onClick={copyGameCode} className={styles.copyButton}>
+              <Button onClick={copyGameCode} className={styles.copyButton} title="Copy game code">
                 {copied ? (
                   <svg
-                    width="24"
-                    height="24"
+                    className={styles.icon}
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -93,8 +177,7 @@ export default function LobbyPage() {
                   </svg>
                 ) : (
                   <svg
-                    width="24"
-                    height="24"
+                    className={styles.icon}
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -104,7 +187,7 @@ export default function LobbyPage() {
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -112,25 +195,71 @@ export default function LobbyPage() {
 
       <div className={styles.rightSide}>
         <div className={styles.playersBox}>
-          <h2 className={styles.playersTitle}>Gathering Players</h2>
+          <h2 className={styles.playersTitle}>{isHost ? 'Waiting for Players' : 'Players'}</h2>
+
           <div className={styles.playersList}>
-            {players.map((player, index) => (
-              <div key={index} className={clsx(styles.playerSlot, styles.filled)}>
-                {player}
-              </div>
+            {/* Show players */}
+            {Object.entries(gameState.playerProfiles).map(([playerId, profile]) => (
+              <PlayerSlot
+                key={playerId}
+                profile={profile}
+                isReady={readyStates[playerId]}
+                isHost={playerId === gameState.createdBy}
+              />
             ))}
-            {Array.from({ length: 2 - players.length }).map((_, index) => (
-              <div key={`empty-${index}`} className={clsx(styles.playerSlot, styles.empty)}>
-                Awaiting player...
-              </div>
+
+            {/* Show empty slots */}
+            {Array.from({
+              length: Math.max(0, 2 - Object.keys(gameState.playerProfiles).length),
+            }).map((_, index) => (
+              <PlayerSlot key={`empty-${index}`} />
             ))}
           </div>
 
-          <button onClick={startGame} disabled={players.length < 2} className={styles.startButton}>
-            {players.length < 2 ? 'Waiting for Players...' : 'Begin the Ritual'}
-          </button>
+          <div className={styles.controls}>
+            {!isHost && (
+              <Button
+                onClick={toggleReady}
+                className={clsx(styles.readyButton, {
+                  [styles.ready]: readyStates[profile?.id || ''],
+                })}
+              >
+                {readyStates[profile?.id || ''] ? 'Ready!' : 'Ready Up'}
+              </Button>
+            )}
+
+            {isHost && (
+              <Button
+                onClick={handleStartGame}
+                disabled={!canStartGame}
+                className={styles.startButton}
+              >
+                {Object.keys(gameState.playerProfiles).length < 2
+                  ? 'Waiting for Players...'
+                  : !canStartGame
+                    ? 'Waiting for Ready...'
+                    : 'Begin the Ritual'}
+              </Button>
+            )}
+
+            <Button onClick={handleLeaveGame} className={styles.leaveButton}>
+              Leave Game
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <Modal title="Error" onClose={() => setShowErrorModal(false)}>
+          <div className={styles.modalContent}>
+            <p>{errorMessage}</p>
+            <Button onClick={() => setShowErrorModal(false)} className={styles.modalButton}>
+              Close
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

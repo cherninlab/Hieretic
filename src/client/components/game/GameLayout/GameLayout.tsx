@@ -1,110 +1,116 @@
-import { useState } from 'react';
+import { GameBoard } from '@components/game/GameBoard';
+import { GameControls } from '@components/game/GameControls';
+import { GameEffects } from '@components/game/GameEffects';
+import { GameHand } from '@components/game/GameHand';
+import { GameResources } from '@components/game/GameResources';
+import type { PhaseType, Layer, PlayerState, TargetingMode } from '@shared/types';
 import styles from './GameLayout.module.css';
 
 interface GameLayoutProps {
-  onCardSelect?: (cardId: number) => void;
-  onSlotSelect?: (slotId: number) => void;
+  currentPhase: PhaseType;
+  onPhaseChange: (phase: PhaseType) => void;
+  playerState: PlayerState;
+  opponentState: PlayerState;
+  onCardSelect: (cardId: string) => void;
+  onSlotSelect: (slotId: number) => void;
+  onAbilityActivate: (cardId: string, abilityIndex: number, targets: string[]) => void;
+  onLayerChange: (layer: Layer) => void;
+  onEndTurn: () => void;
+  onSurrender: () => void;
+  selectedCard: string | null;
+  isMyTurn: boolean;
+  turn: number;
+  targetingMode: TargetingMode | null;
 }
 
-export function GameLayout({ onCardSelect, onSlotSelect }: GameLayoutProps) {
-  const [_, setSelectedCard] = useState<number | null>(null);
-  const [__, setSelectedSlot] = useState<number | null>(null);
-
-  const handleCardSelect = (cardId: number) => {
-    setSelectedCard(cardId);
-    onCardSelect?.(cardId);
-  };
-
-  const handleSlotSelect = (slotId: number) => {
-    setSelectedSlot(slotId);
-    onSlotSelect?.(slotId);
-  };
+export function GameLayout({
+  currentPhase,
+  onPhaseChange,
+  playerState,
+  opponentState,
+  onCardSelect,
+  onSlotSelect,
+  onAbilityActivate,
+  onLayerChange,
+  onEndTurn,
+  onSurrender,
+  selectedCard,
+  isMyTurn,
+  turn,
+  targetingMode,
+}: GameLayoutProps) {
+  // Calculate which cards are playable based on resources
+  const playableCards = new Set(
+    playerState.hand
+      .filter((card) => {
+        const hasResources = Object.keys(card.cost).every(
+          (resource) =>
+            playerState.resources[resource as keyof typeof playerState.resources] >=
+            card.cost[resource as keyof typeof card.cost],
+        );
+        return hasResources && isMyTurn && currentPhase === 'main';
+      })
+      .map((card) => card.id),
+  );
 
   return (
-    <div className={styles.outerContainer}>
-      <div className={styles.container}>
-        {/* Left Sidebar */}
-        <div className={styles.sidebar}>
-          <div className={styles.resourcesSection}>
-            <div className={styles.resourceBox}>
-              <span>5 ●</span>
-            </div>
-            <div className={styles.resourceBox}>
-              <span>3 ○</span>
-            </div>
-          </div>
+    <div className={styles.container}>
+      {/* Left Sidebar */}
+      <div className={styles.sidebar}>
+        <GameResources
+          resources={playerState.resources}
+          layer={playerState.activeLayer}
+          onLayerChange={onLayerChange}
+        />
 
-          <div className={styles.handArea}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} onClick={() => handleCardSelect(i)} className={styles.card}>
-                <div className={styles.slotContent}>{`Card ${i}`}</div>
-              </div>
-            ))}
-          </div>
+        <GameHand
+          cards={playerState.hand}
+          playableCards={playableCards}
+          onCardPlay={onCardSelect}
+          onCardHover={() => {}} // Add hover handler if needed
+        />
 
-          <div className={styles.playerInfo}>
+        <div className={styles.playerInfo}>
+          <div className={styles.playerStats}>
             <div className={styles.avatar} />
-            <span>25 HP</span>
+            <span className={styles.health}>{playerState.health} HP</span>
           </div>
         </div>
+      </div>
 
-        {/* Main Area */}
-        <div className={styles.mainArea}>
-          <div className={styles.header}>
-            <span>Enemy • 25 HP</span>
-            <span>Turn 3</span>
-          </div>
+      {/* Main Game Area */}
+      <div className={styles.mainArea}>
+        <GameControls
+          currentPhase={currentPhase}
+          currentTurn={turn}
+          isPlayerTurn={isMyTurn}
+          onPhaseChange={onPhaseChange}
+          onEndTurn={onEndTurn}
+          onAction={() => {}} // Add specific action handler if needed
+          canEndTurn={isMyTurn && currentPhase === 'end'}
+          onSurrender={onSurrender}
+        />
 
-          <div className={styles.layers}>
-            {['Material', 'Void', 'Deep'].map((layer) => (
-              <button key={layer} className={styles.button}>
-                {layer}
-              </button>
-            ))}
-            <button className={styles.button}>Pass</button>
-          </div>
+        <GameBoard
+          currentPlayer={playerState.id}
+          opponentPlayer={opponentState.id}
+          playerField={playerState.field}
+          opponentField={opponentState.field}
+          selectedCard={selectedCard}
+          onCardPlay={(_cardId, position) => onSlotSelect(position)}
+          onAbilityActivate={onAbilityActivate}
+          isMyTurn={isMyTurn}
+          targetingMode={targetingMode}
+          currentPhase={currentPhase}
+        />
+      </div>
 
-          <div className={styles.battlefieldContainer}>
-            {/* Opponent Area */}
-            <div className={styles.playArea}>
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={styles.slot} onClick={() => handleSlotSelect(i)}>
-                  <div className={styles.slotContent}>{`Slot ${i}`}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.phaseIndicator}>Combat Phase</div>
-
-            {/* Player Area */}
-            <div className={styles.playArea}>
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={styles.slot} onClick={() => handleSlotSelect(i + 4)}>
-                  <div className={styles.slotContent}>{`Slot ${i}`}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Sidebar */}
-        <div className={styles.sidebar}>
-          <div className={styles.cardCount}>5 cards</div>
-
-          <div className={styles.effectsArea}>
-            <div>ACTIVE EFFECTS</div>
-            {[1, 2].map((i) => (
-              <div key={i} className={styles.effectBox} />
-            ))}
-          </div>
-
-          <div className={styles.actionLog}>
-            <div className={styles.logTitle}>LAST ACTIONS</div>
-            <div className={styles.logEntry}>• Enemy played Dark Ritual</div>
-            <div className={styles.logEntry}>• Void effect triggered</div>
-            <div className={styles.logEntry}>• You lost 2 health</div>
-          </div>
-        </div>
+      {/* Right Sidebar */}
+      <div className={styles.sidebar}>
+        <GameEffects
+          playerEffects={playerState.activeEffects || []}
+          opponentEffects={opponentState.activeEffects || []}
+        />
       </div>
     </div>
   );

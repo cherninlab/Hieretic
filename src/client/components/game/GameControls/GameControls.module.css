@@ -1,0 +1,62 @@
+.container {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    align-items: center;
+}
+
+.phaseControls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.actionPanel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
+
+.actionButton {
+    padding: 0.5rem 1rem;
+    background: rgba(201, 162, 39, 0.1);
+    border: 1px solid var(--border);
+    color: var(--gold-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.actionButton:hover:not(:disabled) {
+    background: rgba(201, 162, 39, 0.2);
+    border-color: var(--gold-primary);
+}
+
+.actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.phase {
+    padding: 0.5rem 1rem;
+    background: var(--background-alt);
+    border: 1px solid var(--border);
+    color: var(--gold-primary);
+    text-align: center;
+    font-family: var(--serif-font-family);
+}
+
+.turnCounter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gold-secondary);
+    font-family: var(--serif-font-family);
+}
+
+.activePhase {
+    border-color: var(--gold-primary);
+    background: rgba(201, 162, 39, 0.1);
+}
