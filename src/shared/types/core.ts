@@ -1,4 +1,4 @@
-export type Layer = 'material' | 'void' | 'deep';
+export type Layer = 'material' | 'mind' | 'void';
 
 export interface Card {
   id: string;

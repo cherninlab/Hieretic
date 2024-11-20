@@ -1,13 +1,15 @@
 import { ExecutionContext, ScheduledEvent } from '@cloudflare/workers-types';
+import { handleCards } from './api/cards';
 import { handleDeck } from './api/deck';
 import { handleGame } from './api/game';
 import { handleProfile } from './api/profile';
 import type { Env } from './types';
 import { APIError } from './types';
+import { Errors } from './utils/errors';
 import { errorResponse, jsonResponse } from './utils/response';
 
 export default {
-  async fetch(request: Request, env: Env, _: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
     try {
       const url = new URL(request.url);
       const path = url.pathname;
@@ -25,16 +27,53 @@ export default {
         });
       }
 
+      // Admin endpoints
+      if (path.startsWith('/api/admin')) {
+        if (env.ENVIRONMENT !== 'development') {
+          throw Errors.FORBIDDEN();
+        }
+
+        if (path.startsWith('/api/admin/cards')) {
+          // Card management endpoints
+          if (path === '/api/admin/cards') {
+            switch (request.method) {
+              case 'GET':
+                return await handleCards.list(request, env);
+              case 'POST':
+                return await handleCards.create(request, env);
+              case 'PUT':
+                return await handleCards.update(request, env);
+              case 'DELETE':
+                return await handleCards.delete(request, env);
+            }
+          }
+
+          // Card artwork endpoint
+          if (path === '/api/admin/cards/artwork' && request.method === 'POST') {
+            return await handleCards.uploadArtwork(request, env);
+          }
+        }
+
+        // Deck management endpoints
+        if (path.startsWith('/api/admin/decks')) {
+          if (path === '/api/admin/decks' && request.method === 'GET') {
+            return await handleDeck.list(request, env);
+          }
+        }
+
+        throw Errors.NOT_FOUND('Admin endpoint not found');
+      }
+
       // Profile endpoints
       if (path.startsWith('/api/profile')) {
-        if (request.method === 'GET') {
-          return await handleProfile.get(request, env);
-        }
-        if (request.method === 'POST' && path === '/api/profile/create') {
-          return await handleProfile.create(request, env);
-        }
-        if (request.method === 'POST') {
-          return await handleProfile.update(request, env);
+        switch (request.method) {
+          case 'GET':
+            return await handleProfile.get(request, env);
+          case 'POST':
+            if (path === '/api/profile/create') {
+              return await handleProfile.create(request, env);
+            }
+            return await handleProfile.update(request, env);
         }
       }
 
@@ -49,31 +88,33 @@ export default {
         if (path === '/api/game/start' && request.method === 'POST') {
           return await handleGame.start(request, env);
         }
-        if (path.startsWith('/api/game/state') && request.method === 'GET') {
+        if (path === '/api/game/state' && request.method === 'GET') {
           return await handleGame.getState(request, env);
         }
       }
 
       // Deck endpoints
       if (path.startsWith('/api/deck')) {
-        if (path === '/api/deck/list' && request.method === 'GET') {
-          return await handleDeck.list(request, env);
-        }
-        if (path === '/api/deck/create' && request.method === 'POST') {
-          return await handleDeck.create(request, env);
-        }
-        if (path === '/api/deck/update' && request.method === 'POST') {
-          return await handleDeck.update(request, env);
-        }
-        if (path === '/api/deck/delete' && request.method === 'POST') {
-          return await handleDeck.delete(request, env);
-        }
-        if (request.method === 'GET') {
-          return await handleDeck.get(request, env);
+        switch (request.method) {
+          case 'GET':
+            if (path === '/api/deck/list') {
+              return await handleDeck.list(request, env);
+            }
+            return await handleDeck.get(request, env);
+          case 'POST':
+            if (path === '/api/deck/create') {
+              return await handleDeck.create(request, env);
+            }
+            if (path === '/api/deck/update') {
+              return await handleDeck.update(request, env);
+            }
+            if (path === '/api/deck/delete') {
+              return await handleDeck.delete(request, env);
+            }
         }
       }
 
-      // Handle matchmaking separately as it's a special case
+      // Matchmaking endpoint
       if (path === '/api/matchmake' && request.method === 'POST') {
         const playerId = `player-${Date.now()}`; // Temporary until auth is implemented
         await env.PLAYER_QUEUE.put(
@@ -90,12 +131,28 @@ export default {
         });
       }
 
+      // Asset serving for card artwork
+      if (path.startsWith('/assets/')) {
+        const key = path.replace('/assets/', '');
+        const object = await env.ASSETS.get(key);
+
+        if (!object) {
+          throw Errors.NOT_FOUND('Asset not found');
+        }
+
+        const headers = new Headers({
+          etag: object.httpEtag,
+          'Cache-Control': 'public, max-age=31536000',
+          'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
+        });
+
+        // Convert R2ObjectBody to Web API ReadableStream
+        const arrayBuffer = await object.arrayBuffer();
+        return new Response(arrayBuffer, { headers });
+      }
+
       // If no route matches
-      throw new APIError({
-        code: 'NOT_FOUND',
-        message: 'Endpoint not found',
-        status: 404,
-      });
+      throw Errors.NOT_FOUND('Endpoint not found');
     } catch (error) {
       console.error('Error processing request:', error);
 
@@ -119,8 +176,7 @@ export default {
     }
   },
 
-  // Optional: Add scheduled tasks
-  async scheduled(event: ScheduledEvent, env: Env, _: ExecutionContext) {
+  async scheduled(event: ScheduledEvent, env: Env, _ctx: ExecutionContext) {
     // Handle matchmaking queue cleanup
     if (event.cron === '*/5 * * * *') {
       // Every 5 minutes

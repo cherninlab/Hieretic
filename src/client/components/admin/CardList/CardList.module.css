@@ -1,0 +1,71 @@
+.cardList {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  color: var(--gold-primary);
+  margin-bottom: 1.5rem;
+}
+
+.cardItem {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardItem:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.cardPreview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardStats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--gold-secondary);
+  font-size: 0.875rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rarityIndicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.common {
+  background-color: #999999;
+}
+
+.uncommon {
+  background-color: #1e90ff;
+}
+
+.rare {
+  background-color: #8a2be2;
+}
+
+.mythic {
+  background-color: #ff69b4;
+}

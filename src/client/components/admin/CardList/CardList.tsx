@@ -1,0 +1,99 @@
+import { Button } from '@components/ui/Button';
+import type { CardDefinition } from '@shared/types/cards';
+import clsx from 'clsx';
+import { useEffect, useState } from 'react';
+import styles from './CardList.module.css';
+
+interface CardListProps {
+  onEditCard: (card: CardDefinition) => void;
+  onDeleteCard: (cardId: string) => void;
+}
+
+export function CardList({ onEditCard, onDeleteCard }: CardListProps) {
+  const [cards, setCards] = useState<CardDefinition[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const response = await fetch('/api/admin/cards');
+        const data = await response.json();
+        if (data.success) {
+          setCards(data.data || []);
+        } else {
+          setError(data.error?.message || 'Failed to load cards');
+        }
+      } catch (err) {
+        setError('Failed to connect to server');
+        console.error('Error fetching cards:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCards();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className={styles.loading}>
+        <span>Loading cards...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.error}>
+        <span>{error}</span>
+      </div>
+    );
+  }
+
+  const getRarityClass = (rarity: Rarity) => {
+    switch (rarity) {
+      case 'common':
+        return styles.common;
+      case 'uncommon':
+        return styles.uncommon;
+      case 'rare':
+        return styles.rare;
+      case 'mythic':
+        return styles.mythic;
+      default:
+        return '';
+    }
+  };
+
+  return (
+    <div className={styles.cardList}>
+      <h2 className={styles.sectionTitle}>Card List</h2>
+      <ul>
+        {cards.map((card) => (
+          <li key={card.id} className={styles.cardItem}>
+            <div className={styles.cardPreview}>
+              <div className={clsx(styles.rarityIndicator, getRarityClass(card.rarity))} />
+              <strong>{card.name}</strong> - {card.type} - {card.layer}
+            </div>
+            <div className={styles.cardStats}>
+              <span>
+                Cost: {card.cost.material}● {card.cost.mind}○ {card.cost.void}◊
+              </span>
+              {card.type === 'unit' && (
+                <span>
+                  ATK: {(card as UnitCard).attack} DEF: {(card as UnitCard).defense}
+                </span>
+              )}
+              {card.type === 'ritual' && <span>Duration: {(card as RitualCard).duration}</span>}
+            </div>
+            <div className={styles.cardActions}>
+              <Button onClick={() => onEditCard(card)}>Edit</Button>
+              <Button onClick={() => onDeleteCard(card.id)}>Delete</Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

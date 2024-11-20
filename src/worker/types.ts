@@ -1,4 +1,4 @@
-import type { KVNamespace } from '@cloudflare/workers-types';
+import type { KVNamespace, R2Bucket } from '@cloudflare/workers-types';
 import type { Card, Effect, GameState } from '@shared/types';
 
 export interface Env {
@@ -8,6 +8,9 @@ export interface Env {
   USER_DATA: KVNamespace;
   DECKS: KVNamespace;
   CARDS: KVNamespace;
+
+  // R2 Bucket
+  ASSETS: R2Bucket;
 
   // Environment variables
   ENVIRONMENT: string;
