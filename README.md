@@ -1,20 +1,20 @@
 <div align="center">
   <img src="docs/assets/logo.png" width="200" alt="HIERETIC">
-  <p><em>Ancient knowledge comes with a price</em></p>
+  <p><em>Knowledge has a price.</em></p>
 </div>
 
 ## Overview
 
-HIERETIC is a strategic card game. Drawing inspiration from medieval grimoires.
+HIERETIC is a strategic card game. Drawing inspiration from medieval grimoires and forbidden texts, players manipulate three layers of existence: Material, Mind, and Void.
 
 ## Game Highlights
 
-- **Multi-Layer Strategy**: Battle across Material, Mind, and Void layers of reality
-- **Strategic Depth**: Master complex interactions between layers and effects
-- **Dynamic Gameplay**: Adapt your strategy as reality shifts during the game
-- **Rich Lore**: Immerse yourself in a world of occult knowledge and forbidden powers
+- **Three Layers of Reality**: Master the physical realm, corrupt minds, or bend the laws of existence
+- **Strategic Depth**: Every choice ripples across layers, creating intricate combinations
+- **Dynamic Reality**: Watch as your decisions alter the fabric of the game world
+- **Occult Lore**: Uncover ancient secrets and forbidden knowledge
 
-For detailed information about game mechanics and design, see [GAME_DESIGN.md](docs/GAME_DESIGN.md)
+For detailed mechanics and arcane interactions, consult the [GAME_DESIGN.md](docs/GAME_DESIGN.md)
 
 ## Development
 
@@ -38,12 +38,12 @@ npm test
 
 ```
 src/
-├── client/        # Frontend application
+├── client/          # Frontend application
 │   ├── components/  # React components
 │   ├── pages/       # Route pages
 │   └── styles/      # Global styles
-├── shared/        # Shared types and utilities
-└── worker/        # Backend server code
+├── shared/          # Shared types and utilities
+└── worker/          # Backend server code
 ```
 
 <div align="center">
