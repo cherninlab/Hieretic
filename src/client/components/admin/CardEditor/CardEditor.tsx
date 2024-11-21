@@ -1,11 +1,4 @@
-import type {
-  Card,
-  CardType,
-  EffectCard,
-  NewCard,
-  RitualCard,
-  UnitCard,
-} from '@shared/types/cards';
+import type { CardDefinition, CardType } from '@shared/types/cards';
 import { useState } from 'react';
 import { CardArtworkUploader } from './CardArtworkUploader';
 import styles from './CardEditor.module.css';
@@ -15,23 +8,33 @@ import { CardEditorCardStats } from './CardEditorCardStats';
 import { CardEditorEffectEditor } from './CardEditorEffectEditor';
 
 interface CardEditorProps {
-  initialCard?: NewCard;
-  onSave: (card: Card | NewCard, artwork?: File) => Promise<void>;
+  initialCard?: Partial<CardDefinition>;
+  onSave: (card: CardDefinition, artwork?: File) => Promise<void>;
 }
 
-export function CardEditor({ initialCard, onSave }: CardEditorProps) {
-  const defaultCard: Card = {
-    name: '',
-    type: 'unit',
-    layer: 'material',
-    cost: { material: 0, mind: 0, void: 0 },
-    rarity: 'common',
-    attack: 0,
-    defense: 0,
-    abilities: [],
-  };
+const defaultCard: CardDefinition = {
+  id: `temp-${Date.now()}`, // Temporary ID for new cards
+  name: '',
+  type: 'unit',
+  layer: 'material',
+  cost: { material: 0, mind: 0, void: 0 },
+  rarity: 'common',
+  set: 'core',
+  releaseDate: Date.now(),
+  attack: 0,
+  defense: 0,
+  abilities: [],
+  flavorText: '',
+  effects: [],
+  layerRequirements: {},
+  artworkUrl: '',
+};
 
-  const [card, setCard] = useState<Card | NewCard>(initialCard || defaultCard);
+export function CardEditor({ initialCard, onSave }: CardEditorProps) {
+  const [card, setCard] = useState<CardDefinition>({
+    ...defaultCard,
+    ...initialCard,
+  });
   const [activeTab, setActiveTab] = useState<'basic' | 'stats' | 'effects'>('basic');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [artwork, setArtwork] = useState<File | undefined>();
@@ -39,14 +42,20 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
   const handleTypeChange = (type: CardType) => {
     if (type === card.type) return;
 
-    let newCard: Card;
+    // Keep common properties when changing type
     const baseProperties = {
+      id: card.id,
       name: card.name,
       layer: card.layer,
       cost: { ...card.cost },
       rarity: card.rarity,
       flavorText: card.flavorText,
+      set: card.set,
+      releaseDate: card.releaseDate,
+      artworkUrl: card.artworkUrl,
     };
+
+    let newCard: CardDefinition;
 
     switch (type) {
       case 'unit':
@@ -56,7 +65,7 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
           attack: 0,
           defense: 0,
           abilities: [],
-        } as UnitCard;
+        };
         break;
 
       case 'effect':
@@ -69,7 +78,7 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
             target: 'unit',
             value: 0,
           },
-        } as EffectCard;
+        };
         break;
 
       case 'ritual':
@@ -79,7 +88,7 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
           duration: 3,
           effects: [],
           layerRequirements: {},
-        } as RitualCard;
+        };
         break;
 
       default:
@@ -89,17 +98,48 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
     setCard(newCard);
   };
 
+  const handleCardUpdate = (updates: Partial<CardDefinition>) => {
+    setCard((currentCard) => ({
+      ...currentCard,
+      ...updates,
+    }));
+  };
+
   const validateCard = (): boolean => {
     if (!card.name.trim()) {
       setErrorMessage('Card name is required');
       return false;
     }
+
+    // Add layer-specific validation
+    switch (card.type) {
+      case 'unit':
+        if (card.attack === undefined || card.defense === undefined) {
+          setErrorMessage('Unit cards require attack and defense values');
+          return false;
+        }
+        break;
+      case 'ritual':
+        if (!card.duration) {
+          setErrorMessage('Ritual cards require duration');
+          return false;
+        }
+        break;
+      case 'effect':
+        if (!card.effect) {
+          setErrorMessage('Effect cards require an effect definition');
+          return false;
+        }
+        break;
+    }
+
     setErrorMessage(null);
     return true;
   };
 
   const handleSave = async () => {
     if (!validateCard()) return;
+
     try {
       await onSave(card, artwork);
       setErrorMessage(null);
@@ -138,14 +178,20 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
 
         {activeTab === 'basic' && (
           <>
-            <CardEditorBasicInfo card={card} onChange={setCard} onTypeChange={handleTypeChange} />
+            <CardEditorBasicInfo
+              card={card}
+              onChange={handleCardUpdate}
+              onTypeChange={handleTypeChange}
+            />
             <CardArtworkUploader artwork={card.artworkUrl} onChange={setArtwork} />
           </>
         )}
 
-        {activeTab === 'stats' && <CardEditorCardStats card={card} onChange={setCard} />}
+        {activeTab === 'stats' && <CardEditorCardStats card={card} onChange={handleCardUpdate} />}
 
-        {activeTab === 'effects' && <CardEditorEffectEditor card={card} onChange={setCard} />}
+        {activeTab === 'effects' && (
+          <CardEditorEffectEditor card={card} onChange={handleCardUpdate} />
+        )}
 
         <button className={styles.saveButton} onClick={handleSave}>
           Save Card

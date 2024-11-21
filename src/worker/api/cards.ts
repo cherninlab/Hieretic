@@ -1,4 +1,3 @@
-// src/worker/api/cards.ts
 import type { CardDefinition } from '@shared/types/cards';
 import type { Layer } from '@shared/types/core';
 import type { Env } from '../types';
@@ -76,26 +75,23 @@ export const handleCards = {
     console.log('Parsed Card Data:', card); // Log the parsed card data
 
     // Validate required fields
-    if (!card.name || !card.layer) {
-      throw Errors.INVALID_INPUT('Name and layer are required');
+    if (!card.name || !card.layer || !card.type) {
+      throw Errors.INVALID_INPUT('Name, layer, and type are required');
     }
 
     const cardId = `card:${Date.now()}`;
 
     const cardDefinition: CardDefinition = {
+      ...card,
       id: cardId,
-      name: card.name,
-      layer: card.layer,
       cost: card.cost || { material: 0, mind: 0, void: 0 },
       rarity: card.rarity || 'common',
       flavorText: card.flavorText || '',
       set: card.set || 'core',
       artist: card.artist || '',
       releaseDate: Date.now(),
-      attack: card.attack || 0,
-      defense: card.defense || 0,
       abilities: card.abilities || [],
-      effect: card.effect || null,
+      effect: card.effect,
       duration: card.duration || 0,
       effects: card.effects || [],
       layerRequirements: card.layerRequirements || {},

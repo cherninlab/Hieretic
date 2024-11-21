@@ -1,5 +1,5 @@
 import { Button } from '@components/ui/Button';
-import type { CardDefinition } from '@shared/types/cards';
+import type { CardDefinition, Rarity } from '@shared/types/cards';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import styles from './CardList.module.css';
@@ -36,19 +36,11 @@ export function CardList({ onEditCard, onDeleteCard }: CardListProps) {
   }, []);
 
   if (loading) {
-    return (
-      <div className={styles.loading}>
-        <span>Loading cards...</span>
-      </div>
-    );
+    return <div className={styles.loading}>Loading cards...</div>;
   }
 
   if (error) {
-    return (
-      <div className={styles.error}>
-        <span>{error}</span>
-      </div>
-    );
+    return <div className={styles.error}>{error}</div>;
   }
 
   const getRarityClass = (rarity: Rarity) => {
@@ -82,10 +74,10 @@ export function CardList({ onEditCard, onDeleteCard }: CardListProps) {
               </span>
               {card.type === 'unit' && (
                 <span>
-                  ATK: {(card as UnitCard).attack} DEF: {(card as UnitCard).defense}
+                  ATK: {card.attack} DEF: {card.defense}
                 </span>
               )}
-              {card.type === 'ritual' && <span>Duration: {(card as RitualCard).duration}</span>}
+              {card.type === 'ritual' && card.duration && <span>Duration: {card.duration}</span>}
             </div>
             <div className={styles.cardActions}>
               <Button onClick={() => onEditCard(card)}>Edit</Button>

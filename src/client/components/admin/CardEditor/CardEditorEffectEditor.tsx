@@ -1,10 +1,24 @@
-import type { Card, Effect, EffectType, TargetType } from '@shared/types/cards';
+import type { CardDefinition, Effect, EffectType, TargetType } from '@shared/types/cards';
 import styles from './CardEditor.module.css';
 
 interface CardEditorEffectEditorProps {
-  card: Card;
-  onChange: (card: Card) => void;
+  card: CardDefinition;
+  onChange: (card: CardDefinition) => void;
 }
+
+const effectTypes: EffectType[] = [
+  'damage',
+  'heal',
+  'buff',
+  'debuff',
+  'control',
+  'draw',
+  'discard',
+  'transform',
+  'summon',
+];
+
+const targetTypes: TargetType[] = ['self', 'ally', 'enemy', 'all', 'unit', 'player'];
 
 export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEditorProps) {
   const generateEffectId = () => `effect-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -21,13 +35,13 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
       case 'unit':
         onChange({
           ...card,
-          abilities: [...card.abilities, newEffect],
+          abilities: [...(card.abilities || []), newEffect],
         });
         break;
       case 'ritual':
         onChange({
           ...card,
-          effects: [...card.effects, newEffect],
+          effects: [...(card.effects || []), newEffect],
         });
         break;
       case 'effect':
@@ -44,7 +58,7 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
       case 'unit':
         onChange({
           ...card,
-          abilities: card.abilities.map((effect) =>
+          abilities: (card.abilities || []).map((effect) =>
             effect.id === effectId ? { ...effect, ...updates } : effect,
           ),
         });
@@ -52,13 +66,13 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
       case 'ritual':
         onChange({
           ...card,
-          effects: card.effects.map((effect) =>
+          effects: (card.effects || []).map((effect) =>
             effect.id === effectId ? { ...effect, ...updates } : effect,
           ),
         });
         break;
       case 'effect':
-        if (card.effect.id === effectId) {
+        if (card.effect && card.effect.id === effectId) {
           onChange({
             ...card,
             effect: { ...card.effect, ...updates },
@@ -73,26 +87,30 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
       case 'unit':
         onChange({
           ...card,
-          abilities: card.abilities.filter((effect) => effect.id !== effectId),
+          abilities: (card.abilities || []).filter((effect) => effect.id !== effectId),
         });
         break;
       case 'ritual':
         onChange({
           ...card,
-          effects: card.effects.filter((effect) => effect.id !== effectId),
+          effects: (card.effects || []).filter((effect) => effect.id !== effectId),
         });
         break;
     }
   };
 
-  const effects =
-    card.type === 'unit'
-      ? card.abilities
-      : card.type === 'ritual'
-        ? card.effects
-        : card.type === 'effect'
-          ? [card.effect]
-          : [];
+  const effects: Effect[] = (() => {
+    switch (card.type) {
+      case 'unit':
+        return card.abilities || [];
+      case 'ritual':
+        return card.effects || [];
+      case 'effect':
+        return card.effect ? [card.effect] : [];
+      default:
+        return [];
+    }
+  })();
 
   return (
     <div className={styles.section}>
@@ -111,15 +129,11 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
                   })
                 }
               >
-                <option value="damage">Damage</option>
-                <option value="heal">Heal</option>
-                <option value="buff">Buff</option>
-                <option value="debuff">Debuff</option>
-                <option value="control">Control</option>
-                <option value="draw">Draw</option>
-                <option value="discard">Discard</option>
-                <option value="transform">Transform</option>
-                <option value="summon">Summon</option>
+                {effectTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -134,12 +148,11 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
                   })
                 }
               >
-                <option value="self">Self</option>
-                <option value="ally">Ally</option>
-                <option value="enemy">Enemy</option>
-                <option value="all">All</option>
-                <option value="unit">Unit</option>
-                <option value="player">Player</option>
+                {targetTypes.map((target) => (
+                  <option key={target} value={target}>
+                    {target.charAt(0).toUpperCase() + target.slice(1)}
+                  </option>
+                ))}
               </select>
             </div>
 

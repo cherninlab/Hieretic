@@ -10,7 +10,7 @@ type Tab = 'new-card' | 'card-list' | 'decks' | 'stats';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('new-card');
-  const [cards, setCards] = useState<CardDefinition[]>([]);
+  const [_cards, setCards] = useState<CardDefinition[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<CardDefinition | null>(null);
@@ -152,7 +152,7 @@ export default function AdminPage() {
 
       <main className={styles.main}>
         {activeTab === 'new-card' && (
-          <CardEditor onSave={handleSaveCard} initialCard={editingCard} />
+          <CardEditor onSave={handleSaveCard} initialCard={editingCard ?? {}} />
         )}
         {activeTab === 'card-list' && (
           <CardList onEditCard={handleEditCard} onDeleteCard={handleDeleteCard} />

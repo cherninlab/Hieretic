@@ -1,9 +1,9 @@
-import type { Card } from '@shared/types/cards';
+import type { CardDefinition, Layer } from '@shared/types/cards';
 import styles from './CardEditor.module.css';
 
 interface CardEditorCardStatsProps {
-  card: Card;
-  onChange: (card: Card) => void;
+  card: CardDefinition;
+  onChange: (card: CardDefinition) => void;
 }
 
 export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps) {
@@ -17,7 +17,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
             <input
               type="number"
               className={styles.input}
-              value={card.attack}
+              value={card.attack ?? 0}
               onChange={(e) =>
                 onChange({
                   ...card,
@@ -32,7 +32,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
             <input
               type="number"
               className={styles.input}
-              value={card.defense}
+              value={card.defense ?? 0}
               onChange={(e) =>
                 onChange({
                   ...card,
@@ -48,6 +48,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
   }
 
   if (card.type === 'ritual') {
+    const layers: Layer[] = ['material', 'mind', 'void'];
     return (
       <div className={styles.section}>
         <h4>Ritual Properties</h4>
@@ -57,7 +58,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
             <input
               type="number"
               className={styles.input}
-              value={card.duration}
+              value={card.duration ?? 1}
               onChange={(e) =>
                 onChange({
                   ...card,
@@ -72,7 +73,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Layer Requirements</label>
-            {(['material', 'mind', 'void'] as const).map((layer) => (
+            {layers.map((layer) => (
               <div key={layer} className={styles.layerRequirement}>
                 <label className={styles.label}>
                   {layer.charAt(0).toUpperCase() + layer.slice(1)}
@@ -80,7 +81,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
                 <input
                   type="number"
                   className={styles.input}
-                  value={card.layerRequirements[layer] || 0}
+                  value={card.layerRequirements?.[layer] ?? 0}
                   onChange={(e) =>
                     onChange({
                       ...card,

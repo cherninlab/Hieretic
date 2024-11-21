@@ -13,7 +13,7 @@ export const Errors = {
 
   INVALID_INPUT: (message: string) => createError('INVALID_INPUT', message, 400),
 
-  UNAUTHORIZED: () => createError('UNAUTHORIZED', 'Unauthorized', 401),
+  UNAUTHORIZED: (message?: string) => createError('UNAUTHORIZED', message ?? 'Unauthorized', 401),
 
   FORBIDDEN: () => createError('FORBIDDEN', 'Forbidden', 403),
 

@@ -21,10 +21,44 @@ export default {
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Profile-ID',
             'Access-Control-Max-Age': '86400',
           },
         });
+      }
+
+      // Profile endpoints
+      if (path.startsWith('/api/profile')) {
+        switch (request.method) {
+          case 'GET':
+            return await handleProfile.get(request, env);
+          case 'POST':
+            if (path === '/api/profile/create') {
+              return await handleProfile.create(request, env);
+            }
+            return await handleProfile.update(request, env);
+        }
+      }
+
+      // Deck endpoints
+      if (path.startsWith('/api/deck')) {
+        switch (request.method) {
+          case 'GET':
+            if (path === '/api/deck/list') {
+              return await handleDeck.list(request, env);
+            }
+            return await handleDeck.get(request, env);
+          case 'POST':
+            if (path === '/api/deck/create') {
+              return await handleDeck.create(request, env);
+            }
+            if (path === '/api/deck/update') {
+              return await handleDeck.update(request, env);
+            }
+            if (path === '/api/deck/delete') {
+              return await handleDeck.delete(request, env);
+            }
+        }
       }
 
       // Admin endpoints
@@ -54,27 +88,7 @@ export default {
           }
         }
 
-        // Deck management endpoints
-        if (path.startsWith('/api/admin/decks')) {
-          if (path === '/api/admin/decks' && request.method === 'GET') {
-            return await handleDeck.list(request, env);
-          }
-        }
-
         throw Errors.NOT_FOUND('Admin endpoint not found');
-      }
-
-      // Profile endpoints
-      if (path.startsWith('/api/profile')) {
-        switch (request.method) {
-          case 'GET':
-            return await handleProfile.get(request, env);
-          case 'POST':
-            if (path === '/api/profile/create') {
-              return await handleProfile.create(request, env);
-            }
-            return await handleProfile.update(request, env);
-        }
       }
 
       // Game endpoints
@@ -93,32 +107,16 @@ export default {
         }
       }
 
-      // Deck endpoints
-      if (path.startsWith('/api/deck')) {
-        switch (request.method) {
-          case 'GET':
-            if (path === '/api/deck/list') {
-              return await handleDeck.list(request, env);
-            }
-            return await handleDeck.get(request, env);
-          case 'POST':
-            if (path === '/api/deck/create') {
-              return await handleDeck.create(request, env);
-            }
-            if (path === '/api/deck/update') {
-              return await handleDeck.update(request, env);
-            }
-            if (path === '/api/deck/delete') {
-              return await handleDeck.delete(request, env);
-            }
-        }
-      }
-
       // Matchmaking endpoint
       if (path === '/api/matchmake' && request.method === 'POST') {
-        const playerId = `player-${Date.now()}`; // Temporary until auth is implemented
+        // Get profile ID from header
+        const profileId = request.headers.get('X-Profile-ID');
+        if (!profileId) {
+          throw Errors.UNAUTHORIZED();
+        }
+
         await env.PLAYER_QUEUE.put(
-          playerId,
+          profileId,
           JSON.stringify({
             timestamp: Date.now(),
             status: 'searching',
@@ -144,9 +142,9 @@ export default {
           etag: object.httpEtag,
           'Cache-Control': 'public, max-age=31536000',
           'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
+          'Access-Control-Allow-Origin': '*',
         });
 
-        // Convert R2ObjectBody to Web API ReadableStream
         const arrayBuffer = await object.arrayBuffer();
         return new Response(arrayBuffer, { headers });
       }
@@ -179,7 +177,6 @@ export default {
   async scheduled(event: ScheduledEvent, env: Env, _ctx: ExecutionContext) {
     // Handle matchmaking queue cleanup
     if (event.cron === '*/5 * * * *') {
-      // Every 5 minutes
       const queue = await env.PLAYER_QUEUE.list();
       const now = Date.now();
 

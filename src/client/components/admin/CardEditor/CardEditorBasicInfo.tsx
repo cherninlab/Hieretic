@@ -1,14 +1,14 @@
-import type { Card, CardType, Layer, Rarity } from '@shared/types/cards';
+import type { CardDefinition, CardType, Layer } from '@shared/types/cards';
 import styles from './CardEditor.module.css';
 
 interface CardEditorBasicInfoProps {
-  card: Card;
-  onChange: (card: Card) => void;
+  card: CardDefinition;
+  onChange: (card: CardDefinition) => void;
   onTypeChange: (type: CardType) => void;
 }
 
 export function CardEditorBasicInfo({ card, onChange, onTypeChange }: CardEditorBasicInfoProps) {
-  const updateCost = (resource: keyof Card['cost'], value: number) => {
+  const updateCost = (resource: keyof CardDefinition['cost'], value: number) => {
     onChange({
       ...card,
       cost: {
@@ -17,6 +17,9 @@ export function CardEditorBasicInfo({ card, onChange, onTypeChange }: CardEditor
       },
     });
   };
+
+  const layers: Layer[] = ['material', 'mind', 'void'];
+  const rarities = ['common', 'uncommon', 'rare', 'mythic'] as const;
 
   return (
     <div className={styles.section}>
@@ -54,9 +57,11 @@ export function CardEditorBasicInfo({ card, onChange, onTypeChange }: CardEditor
             value={card.layer}
             onChange={(e) => onChange({ ...card, layer: e.target.value as Layer })}
           >
-            <option value="material">Material</option>
-            <option value="mind">Mind</option>
-            <option value="void">Void</option>
+            {layers.map((layer) => (
+              <option key={layer} value={layer}>
+                {layer.charAt(0).toUpperCase() + layer.slice(1)}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -65,49 +70,36 @@ export function CardEditorBasicInfo({ card, onChange, onTypeChange }: CardEditor
           <select
             className={styles.select}
             value={card.rarity}
-            onChange={(e) => onChange({ ...card, rarity: e.target.value as Rarity })}
+            onChange={(e) =>
+              onChange({ ...card, rarity: e.target.value as (typeof rarities)[number] })
+            }
           >
-            <option value="common">Common</option>
-            <option value="uncommon">Uncommon</option>
-            <option value="rare">Rare</option>
-            <option value="mythic">Mythic</option>
+            {rarities.map((rarity) => (
+              <option key={rarity} value={rarity}>
+                {rarity.charAt(0).toUpperCase() + rarity.slice(1)}
+              </option>
+            ))}
           </select>
         </div>
       </div>
 
       <div className={styles.formRow}>
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Material Cost</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={card.cost.material}
-            onChange={(e) => updateCost('material', parseInt(e.target.value))}
-            min="0"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Mind Cost</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={card.cost.mind}
-            onChange={(e) => updateCost('mind', parseInt(e.target.value))}
-            min="0"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Void Cost</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={card.cost.void}
-            onChange={(e) => updateCost('void', parseInt(e.target.value))}
-            min="0"
-          />
-        </div>
+        {Object.keys(card.cost).map((resource) => (
+          <div key={resource} className={styles.formGroup}>
+            <label className={styles.label}>
+              {resource.charAt(0).toUpperCase() + resource.slice(1)} Cost
+            </label>
+            <input
+              type="number"
+              className={styles.input}
+              value={card.cost[resource as keyof typeof card.cost]}
+              onChange={(e) =>
+                updateCost(resource as keyof typeof card.cost, parseInt(e.target.value))
+              }
+              min="0"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

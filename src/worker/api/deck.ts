@@ -5,8 +5,13 @@ import { jsonResponse } from '../utils/response';
 import { requireAuth } from './auth';
 
 export const handleDeck = {
-  list: requireAuth(async (_: Request, env: Env, userId: string) => {
-    const userDecks = await env.DECKS.list({ prefix: `${userId}/` });
+  list: requireAuth(async (request: Request, env: Env, userId: string) => {
+    const url = new URL(request.url);
+    const idParam = url.searchParams.get('id');
+
+    const profileId = idParam || userId;
+
+    const userDecks = await env.DECKS.list({ prefix: `${profileId}/` });
     const decks = await Promise.all(
       userDecks.keys.map(async (key) => {
         const deck = await env.DECKS.get(key.name);

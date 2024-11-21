@@ -2,11 +2,23 @@ import type { UserProfile } from '@shared/types/user';
 import type { Env } from '../types';
 import { APIError } from '../types';
 import { jsonResponse } from '../utils/response';
-import { requireAuth } from './auth';
 
 export const handleProfile = {
-  get: requireAuth(async (_: Request, env: Env, userId: string) => {
-    const profile = await env.USER_DATA.get(userId);
+  get: async (request: Request, env: Env) => {
+    const url = new URL(request.url);
+    const profileId = url.searchParams.get('id');
+
+    if (!profileId) {
+      throw new APIError({
+        code: 'INVALID_INPUT',
+        message: 'Profile ID is required',
+        status: 400,
+      });
+    }
+
+    // Ensure consistent key format
+    const profileKey = profileId.startsWith('user:') ? profileId : `user:${profileId}`;
+    const profile = await env.USER_DATA.get(profileKey);
 
     if (!profile) {
       throw new APIError({
@@ -16,31 +28,8 @@ export const handleProfile = {
       });
     }
 
-    return jsonResponse(JSON.parse(profile));
-  }),
-
-  update: requireAuth(async (request: Request, env: Env, userId: string) => {
-    const updates = (await request.json()) as Partial<UserProfile>;
-    const existing = await env.USER_DATA.get(userId);
-
-    if (!existing) {
-      throw new APIError({
-        code: 'PROFILE_NOT_FOUND',
-        message: 'Profile not found',
-        status: 404,
-      });
-    }
-
-    const currentProfile = JSON.parse(existing);
-    const updatedProfile = {
-      ...currentProfile,
-      ...updates,
-      updated: Date.now(),
-    };
-
-    await env.USER_DATA.put(userId, JSON.stringify(updatedProfile));
-    return jsonResponse(updatedProfile);
-  }),
+    return jsonResponse(profile);
+  },
 
   create: async (request: Request, env: Env) => {
     const { username } = await request.json();
@@ -53,7 +42,7 @@ export const handleProfile = {
       });
     }
 
-    const userId = `user-${Date.now()}`;
+    const userId = `user:user-${Date.now()}`;
     const profile: UserProfile = {
       id: userId,
       username: username.trim(),
@@ -73,5 +62,38 @@ export const handleProfile = {
 
     await env.USER_DATA.put(userId, JSON.stringify(profile));
     return jsonResponse(profile);
+  },
+
+  update: async (request: Request, env: Env) => {
+    const updates = await request.json();
+    const profileId = updates.id;
+
+    if (!profileId) {
+      throw new APIError({
+        code: 'INVALID_INPUT',
+        message: 'Profile ID is required',
+        status: 400,
+      });
+    }
+
+    const profileKey = profileId.startsWith('user:') ? profileId : `user:${profileId}`;
+    const existing = await env.USER_DATA.get(profileKey);
+
+    if (!existing) {
+      throw new APIError({
+        code: 'PROFILE_NOT_FOUND',
+        message: 'Profile not found',
+        status: 404,
+      });
+    }
+
+    const updatedProfile = {
+      ...JSON.parse(existing),
+      ...updates,
+      updated: Date.now(),
+    };
+
+    await env.USER_DATA.put(profileKey, JSON.stringify(updatedProfile));
+    return jsonResponse(updatedProfile);
   },
 };

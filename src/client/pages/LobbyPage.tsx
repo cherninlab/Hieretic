@@ -1,74 +1,100 @@
-// src/client/pages/LobbyPage.tsx
+import { UserProfile } from '@shared/types/user';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useGame } from '../hooks/useGame';
+import { useProfile } from '../hooks/useProfile';
 import styles from './LobbyPage.module.css';
+
+interface GameLobbyState {
+  status: 'waiting' | 'active' | 'finished';
+  createdBy: string;
+  players: string[];
+  playerProfiles: Record<string, UserProfile>;
+}
+
+interface PlayerSlotProps {
+  player?: UserProfile;
+  empty?: boolean;
+}
+
+function PlayerSlot({ player, empty = false }: PlayerSlotProps) {
+  return (
+    <div className={clsx(styles.playerSlot, empty ? styles.empty : styles.filled)}>
+      {player ? player.username : 'Awaiting player...'}
+    </div>
+  );
+}
 
 export default function LobbyPage() {
   const navigate = useNavigate();
   const { gameCode } = useParams<{ gameCode: string }>();
-  const [players, setPlayers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
+  // Get current user's profile
+  const { profile } = useProfile();
+
+  // Get and subscribe to game state
+  const { gameState, error, isLoading, startGame } = useGame(gameCode || '');
+
+  // Handle navigation to game when it starts
   useEffect(() => {
-    const fetchGameState = async () => {
-      try {
-        const response = await fetch(`/api/get-game-state?gameCode=${gameCode}`);
-        const data = await response.json();
+    if (gameState?.status === 'active' && gameCode) {
+      navigate(`/game/${gameCode}`);
+    }
+  }, [gameState?.status, gameCode, navigate]);
 
-        if (Array.isArray(data.players)) {
-          setPlayers(data.players);
-        } else {
-          console.error('Unexpected data format:', data);
-          setPlayers([]);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching game state:', error);
-        setLoading(false);
-      }
-    };
+  // Copy game code to clipboard
+  const copyGameCode = useCallback(async () => {
+    if (!gameCode) return;
 
-    fetchGameState();
-    const interval = setInterval(fetchGameState, 5000);
-    return () => clearInterval(interval);
-  }, [gameCode]);
-
-  const copyGameCode = async () => {
     try {
-      await navigator.clipboard.writeText(gameCode || '');
+      await navigator.clipboard.writeText(gameCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  };
+  }, [gameCode]);
 
-  const startGame = async () => {
+  // Handle game start
+  const handleStartGame = useCallback(async () => {
+    if (!gameCode) return;
+
     try {
-      const response = await fetch('/api/start-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameCode }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        navigate(`/game/${gameCode}`);
-      }
+      await startGame(gameCode);
+      // Will navigate automatically when game state updates
     } catch (error) {
       console.error('Error starting game:', error);
     }
-  };
+  }, [gameCode, startGame]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.loading}>
         <span className={styles.loadingText}>Connecting to the ethereal plane...</span>
       </div>
     );
   }
+
+  if (error || !gameState) {
+    return (
+      <div className={styles.error}>
+        <div className={styles.errorText}>
+          {error instanceof Error ? error.message : 'Game not found'}
+        </div>
+        <button onClick={() => navigate('/')} className={styles.returnButton}>
+          Return to Main Menu
+        </button>
+      </div>
+    );
+  }
+
+  // Extract game state
+  const lobbyState = gameState as unknown as GameLobbyState;
+  const isCreator = profile?.id === lobbyState.createdBy;
+  const players = lobbyState.players;
+  const playerProfiles = lobbyState.playerProfiles || {};
 
   return (
     <div className={styles.container}>
@@ -114,20 +140,27 @@ export default function LobbyPage() {
         <div className={styles.playersBox}>
           <h2 className={styles.playersTitle}>Gathering Players</h2>
           <div className={styles.playersList}>
-            {players.map((player, index) => (
-              <div key={index} className={clsx(styles.playerSlot, styles.filled)}>
-                {player}
-              </div>
+            {/* Show all joined players */}
+            {players.map((playerId) => (
+              <PlayerSlot key={playerId} player={playerProfiles[playerId]} />
             ))}
-            {Array.from({ length: 2 - players.length }).map((_, index) => (
-              <div key={`empty-${index}`} className={clsx(styles.playerSlot, styles.empty)}>
-                Awaiting player...
-              </div>
+
+            {/* Show empty slots */}
+            {Array.from({ length: Math.max(0, 2 - players.length) }).map((_, index) => (
+              <PlayerSlot key={`empty-${index}`} empty />
             ))}
           </div>
 
-          <button onClick={startGame} disabled={players.length < 2} className={styles.startButton}>
-            {players.length < 2 ? 'Waiting for Players...' : 'Begin the Ritual'}
+          <button
+            onClick={handleStartGame}
+            disabled={!isCreator || players.length < 2}
+            className={styles.startButton}
+          >
+            {!isCreator
+              ? 'Waiting for host...'
+              : players.length < 2
+                ? 'Waiting for Players...'
+                : 'Begin the Ritual'}
           </button>
         </div>
       </div>

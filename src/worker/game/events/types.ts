@@ -1,0 +1,12 @@
+export const GameEventTypes = {
+  CARD_PLAYED: 'CARD_PLAYED',
+  CARD_DRAWN: 'CARD_DRAWN',
+  PHASE_CHANGED: 'PHASE_CHANGED',
+  COMBAT_RESOLVED: 'COMBAT_RESOLVED',
+  LAYER_CHANGED: 'LAYER_CHANGED',
+  RESOURCES_CHANGED: 'RESOURCES_CHANGED',
+  EFFECT_TRIGGERED: 'EFFECT_TRIGGERED',
+  GAME_WON: 'GAME_WON',
+} as const;
+
+export type GameEventType = (typeof GameEventTypes)[keyof typeof GameEventTypes];

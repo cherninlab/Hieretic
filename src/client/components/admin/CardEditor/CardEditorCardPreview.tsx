@@ -1,11 +1,11 @@
-import type { Card, Effect } from '@shared/types/cards';
+import { CardDefinition, Effect } from '@shared/types/cards';
 import styles from './CardEditor.module.css';
 
 interface CardEditorCardPreviewProps {
-  card: Card;
+  card: CardDefinition; // Changed from Card to CardDefinition
 }
 
-const getEffectsForCard = (card: Card): Effect[] => {
+const getEffectsForCard = (card: CardDefinition): Effect[] => {
   switch (card.type) {
     case 'unit':
       return card.abilities || [];
@@ -41,11 +41,11 @@ export function CardEditorCardPreview({ card }: CardEditorCardPreviewProps) {
           <div className={styles.previewStats}>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>ATK</span>
-              <span className={styles.statValue}>{(card as UnitCard).attack}</span>
+              <span className={styles.statValue}>{card.attack || 0}</span>
             </div>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>DEF</span>
-              <span className={styles.statValue}>{(card as UnitCard).defense}</span>
+              <span className={styles.statValue}>{card.defense || 0}</span>
             </div>
           </div>
         )}
@@ -54,7 +54,7 @@ export function CardEditorCardPreview({ card }: CardEditorCardPreviewProps) {
           <div className={styles.previewStats}>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Duration</span>
-              <span className={styles.statValue}>{(card as RitualCard).duration}</span>
+              <span className={styles.statValue}>{card.duration || 0}</span>
             </div>
           </div>
         )}

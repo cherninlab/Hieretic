@@ -1,6 +1,8 @@
-// src/client/pages/WelcomePage.tsx
-import { useState } from 'react';
+import { Button } from '@components/ui/Button';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGame } from '../hooks/useGame';
+import { useProfile } from '../hooks/useProfile';
 import styles from './WelcomePage.module.css';
 
 export default function WelcomePage() {
@@ -9,51 +11,68 @@ export default function WelcomePage() {
   const [isMatchmaking, setIsMatchmaking] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
-  const handleCreateGame = async () => {
-    try {
-      setStatusMessage('Creating game...');
-      const response = await fetch('/api/create-game', { method: 'POST' });
-      const data = await response.json();
-      navigate(`/lobby/${data.gameCode}`);
-    } catch (error) {
-      console.error('Error creating game:', error);
-      setStatusMessage('Failed to create game');
+  // Custom hooks
+  const { profile } = useProfile();
+  const { createGame, joinGame, error: gameError, isLoading } = useGame();
+
+  console.log('profile:', profile);
+
+  // Reset status message when error changes
+  useEffect(() => {
+    if (gameError) {
+      setStatusMessage(gameError.message);
     }
-  };
+  }, [gameError]);
+
+  // Clean up matchmaking on unmount
+  useEffect(() => {
+    return () => {
+      if (isMatchmaking) {
+        // TODO: Implement matchmaking cleanup
+        setIsMatchmaking(false);
+      }
+    };
+  }, [isMatchmaking]);
 
   const handleJoinGame = async () => {
-    if (!gameCode.trim()) return;
+    if (!profile || !gameCode.trim()) return;
 
     try {
       setStatusMessage('Joining game...');
-      const response = await fetch('/api/join-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameCode: gameCode.trim() }),
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        navigate(`/lobby/${gameCode.trim()}`);
-      } else {
-        setStatusMessage('Game not found or full');
-      }
+      await joinGame(gameCode.trim());
     } catch (error) {
-      console.error('Error joining game:', error);
-      setStatusMessage('Failed to join game');
+      setStatusMessage(error instanceof Error ? error.message : 'Failed to join game');
+    }
+  };
+
+  const handleCreateGame = async () => {
+    if (!profile) return;
+
+    try {
+      setStatusMessage('Creating game...');
+      await createGame();
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : 'Failed to create game');
     }
   };
 
   const startMatchmaking = async () => {
-    if (isMatchmaking) return;
+    if (!profile || isMatchmaking) return;
 
     setIsMatchmaking(true);
     setStatusMessage('Searching for worthy opponents...');
 
     try {
-      const response = await fetch('/api/matchmake', { method: 'POST' });
-      const data = await response.json();
+      // Using the API client directly for matchmaking as it's a special case
+      const response = await fetch('/api/matchmake', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Profile-ID': profile.id,
+        },
+      });
 
+      const data = await response.json();
       if (data.gameCode) {
         navigate(`/lobby/${data.gameCode}`);
       } else {
@@ -72,6 +91,9 @@ export default function WelcomePage() {
         <div className={styles.heroContent}>
           <h1 className={styles.title}>HIERETIC</h1>
           <p className={styles.subtitle}>SCIƎNŦIA ØCCVLŦA PREŦIVM</p>
+          <Button onClick={() => navigate('/profile')} className={styles.profileButton}>
+            {profile ? profile.username : 'Create Profile'}
+          </Button>
         </div>
       </div>
 
@@ -85,24 +107,37 @@ export default function WelcomePage() {
               value={gameCode}
               onChange={(e) => setGameCode(e.target.value)}
               className={styles.input}
+              disabled={isLoading}
             />
-            <button onClick={handleJoinGame} disabled={!gameCode.trim()} className={styles.button}>
-              Join Game
-            </button>
+            <Button
+              onClick={handleJoinGame}
+              disabled={isLoading || !profile || !gameCode.trim()}
+              className={styles.button}
+            >
+              {isLoading ? 'Joining...' : 'Join Game'}
+            </Button>
           </section>
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Create New Game</h2>
-            <button onClick={handleCreateGame} className={styles.button}>
-              Create Game
-            </button>
+            <Button
+              onClick={handleCreateGame}
+              disabled={isLoading || !profile}
+              className={styles.button}
+            >
+              {isLoading ? 'Creating...' : 'Create Game'}
+            </Button>
           </section>
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Quick Match</h2>
-            <button onClick={startMatchmaking} disabled={isMatchmaking} className={styles.button}>
+            <Button
+              onClick={startMatchmaking}
+              disabled={isLoading || !profile || isMatchmaking}
+              className={styles.button}
+            >
               {isMatchmaking ? 'Finding Match...' : 'Find Match'}
-            </button>
+            </Button>
             {statusMessage && <p className={styles.statusMessage}>{statusMessage}</p>}
           </section>
         </div>
