@@ -127,6 +127,7 @@ Resources are shared within each layer and refresh each turn. Some cards can tem
    - More flexible but more complex to use
 
 3. **Universal**
+
    - Basic effects that work in any layer
    - Generally weaker but more reliable
 
@@ -171,3 +172,19 @@ Resources are shared within each layer and refresh each turn. Some cards can tem
 - Card synergy limits
 - First player advantage mitigation
 - Cross-layer interaction balance
+
+## Technical Architecture
+
+### Frontend
+
+- **Framework**: React
+- **State Management**: Zustand
+- **Routing**: React Router
+- **Animations**: Framer Motion
+- **Styling**: CSS Modules
+
+### Backend
+
+- **Environment**: Cloudflare Workers
+- **Storage**: KV Namespaces for game state, user profiles, and decks
+- **Assets**: R2 Buckets for storing card artwork

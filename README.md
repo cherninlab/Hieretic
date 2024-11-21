@@ -18,6 +18,11 @@ For detailed mechanics and arcane interactions, consult the [GAME_DESIGN.md](doc
 
 ## Development
 
+### Prerequisites
+
+- Node.js v18.x or higher
+- npm or yarn
+
 ### Quick Start
 
 ```bash
@@ -46,6 +51,6 @@ src/
 └── worker/          # Backend server code
 ```
 
-<div align="center">
-  <sub>Built with ❤️ by Chernin Lab</sub>
-</div>
+## Credits
+
+Built with ❤️ by Chernin Lab
