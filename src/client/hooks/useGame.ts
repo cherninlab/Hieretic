@@ -61,7 +61,7 @@ export function useGame(gameCode?: string): UseGameReturn {
   const gameState: GameState | null = gameStateResponse
     ? {
         ...gameStateResponse,
-        players: Object.keys(gameStateResponse.playerStates).reduce(
+        players: Object.keys(gameStateResponse.playerStates || {}).reduce(
           (acc, playerId) => {
             acc[playerId] = {
               ...gameStateResponse.playerStates[playerId],

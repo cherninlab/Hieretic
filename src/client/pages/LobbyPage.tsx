@@ -1,4 +1,4 @@
-import { UserProfile } from '@shared/types/user';
+import type { UserProfile } from '@shared/types/user';
 import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,13 +6,18 @@ import { useGame } from '../hooks/useGame';
 import { useProfile } from '../hooks/useProfile';
 import styles from './LobbyPage.module.css';
 
+interface LobbyPlayerState {
+  id: string;
+  connected: boolean;
+  ready: boolean;
+}
+
 interface GameLobbyState {
   status: 'waiting' | 'active' | 'finished';
   createdBy: string;
-  players: string[];
+  players: Record<string, LobbyPlayerState>;
   playerProfiles: Record<string, UserProfile>;
 }
-
 interface PlayerSlotProps {
   player?: UserProfile;
   empty?: boolean;
@@ -62,12 +67,29 @@ export default function LobbyPage() {
     if (!gameCode) return;
 
     try {
+      setStatusMessage('Starting game...');
       await startGame(gameCode);
-      // Will navigate automatically when game state updates
     } catch (error) {
-      console.error('Error starting game:', error);
+      setStatusMessage(error instanceof Error ? error.message : 'Failed to start game');
     }
   }, [gameCode, startGame]);
+
+  // Status message for user feedback
+  const [statusMessage, setStatusMessage] = useState('');
+
+  // Reset status message when error changes
+  useEffect(() => {
+    if (error) {
+      setStatusMessage(error.message);
+    }
+  }, [error]);
+
+  // Clean up matchmaking on unmount
+  useEffect(() => {
+    return () => {
+      // TODO: Implement matchmaking cleanup if needed
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -93,8 +115,12 @@ export default function LobbyPage() {
   // Extract game state
   const lobbyState = gameState as unknown as GameLobbyState;
   const isCreator = profile?.id === lobbyState.createdBy;
-  const players = lobbyState.players;
+  const playerProfilesIds = Object.keys(lobbyState.playerProfiles || {});
   const playerProfiles = lobbyState.playerProfiles || {};
+
+  // Debugging logs
+  console.log('gameState:', gameState);
+  console.log('playerProfiles:', playerProfiles);
 
   return (
     <div className={styles.container}>
@@ -141,27 +167,28 @@ export default function LobbyPage() {
           <h2 className={styles.playersTitle}>Gathering Players</h2>
           <div className={styles.playersList}>
             {/* Show all joined players */}
-            {players.map((playerId) => (
+            {playerProfilesIds.map((playerId) => (
               <PlayerSlot key={playerId} player={playerProfiles[playerId]} />
             ))}
 
             {/* Show empty slots */}
-            {Array.from({ length: Math.max(0, 2 - players.length) }).map((_, index) => (
+            {Array.from({ length: Math.max(0, 2 - playerProfilesIds.length) }).map((_, index) => (
               <PlayerSlot key={`empty-${index}`} empty />
             ))}
           </div>
 
           <button
             onClick={handleStartGame}
-            disabled={!isCreator || players.length < 2}
+            disabled={!isCreator || playerProfilesIds.length < 2}
             className={styles.startButton}
           >
             {!isCreator
               ? 'Waiting for host...'
-              : players.length < 2
+              : playerProfilesIds.length < 2
                 ? 'Waiting for Players...'
                 : 'Begin the Ritual'}
           </button>
+          {statusMessage && <p className={styles.statusMessage}>{statusMessage}</p>}
         </div>
       </div>
     </div>
