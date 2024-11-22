@@ -2,7 +2,6 @@ import { GamePhase } from '@shared/types/game';
 import { useEffect, useState } from 'react';
 import { ActionPanel } from './ActionPanel';
 import styles from './GameControls.module.css';
-import { PhaseIndicator } from './PhaseIndicator';
 import { TurnCounter } from './TurnCounter';
 
 export interface GameControlsProps {
@@ -20,7 +19,7 @@ export function GameControls({
   currentPhase,
   currentTurn,
   isPlayerTurn,
-  onPhaseChange,
+  // onPhaseChange,
   onEndTurn,
   onAction,
   canEndTurn,
@@ -46,11 +45,11 @@ export function GameControls({
       <TurnCounter turn={currentTurn} isPlayerTurn={isPlayerTurn} />
 
       <div className={styles.phaseControls}>
-        <PhaseIndicator
+        {/* <PhaseIndicator
           currentPhase={currentPhase}
           onPhaseSelect={onPhaseChange}
           isPlayerTurn={isPlayerTurn}
-        />
+        /> */}
       </div>
 
       <ActionPanel

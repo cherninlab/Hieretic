@@ -5,7 +5,7 @@ interface GameResourcesProps {
   resources: {
     material: number;
     mind: number;
-    void: number;
+    // void: number;
   };
   layer: Layer;
   onLayerChange: (layer: Layer) => void;
@@ -34,14 +34,14 @@ export function GameResources({ resources, layer, onLayerChange }: GameResources
           <div className={styles.resourceCount}>{resources.mind}</div>
         </button>
 
-        <button
+        {/* <button
           className={`${styles.layerButton} ${layer === 'void' ? styles.active : ''}`}
           onClick={() => onLayerChange('void')}
         >
           <div className={styles.resourceIcon}>◊</div>
           <span>Void</span>
           <div className={styles.resourceCount}>{resources.void}</div>
-        </button>
+        </button> */}
       </div>
 
       {/* Resource Details */}
@@ -49,15 +49,14 @@ export function GameResources({ resources, layer, onLayerChange }: GameResources
         <div className={styles.resourceInfo}>
           <div className={styles.resourceLabel}>Generation</div>
           <div className={styles.resourceValue}>
-            +{layer === 'material' ? 1 : 0}● +{layer === 'mind' ? 1 : 0}○ +
-            {layer === 'void' ? 1 : 0}◊
+            +{layer === 'material' ? 1 : 0}● +{layer === 'mind' ? 1 : 0}○
           </div>
         </div>
 
         <div className={styles.resourceInfo}>
           <div className={styles.resourceLabel}>Available</div>
           <div className={styles.resourceValue}>
-            {resources.material}● {resources.mind}○ {resources.void}◊
+            {resources.material}● {resources.mind}○
           </div>
         </div>
       </div>

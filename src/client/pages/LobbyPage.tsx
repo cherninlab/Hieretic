@@ -118,10 +118,6 @@ export default function LobbyPage() {
   const playerProfilesIds = Object.keys(lobbyState.playerProfiles || {});
   const playerProfiles = lobbyState.playerProfiles || {};
 
-  // Debugging logs
-  console.log('gameState:', gameState);
-  console.log('playerProfiles:', playerProfiles);
-
   return (
     <div className={styles.container}>
       <div className={styles.leftSide}>

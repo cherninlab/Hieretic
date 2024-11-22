@@ -7,7 +7,7 @@ export interface PhaseIndicatorProps {
   isPlayerTurn: boolean;
 }
 
-export function PhaseIndicator({ currentPhase, onPhaseSelect, isPlayerTurn }: PhaseIndicatorProps) {
+export function PhaseIndicator({ currentPhase }: PhaseIndicatorProps) {
   const phases: GamePhase[] = ['draw', 'main', 'combat', 'end'];
 
   return (
@@ -15,7 +15,6 @@ export function PhaseIndicator({ currentPhase, onPhaseSelect, isPlayerTurn }: Ph
       {phases.map((phase) => (
         <div
           key={phase}
-          onClick={() => isPlayerTurn && onPhaseSelect(phase)}
           className={`${styles.phase} ${phase === currentPhase ? styles.activePhase : ''}`}
         >
           {phase.charAt(0).toUpperCase() + phase.slice(1)}

@@ -23,7 +23,6 @@
   background: var(--surface);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  border: 1px solid var(--border);
   overflow: hidden;
 }
 

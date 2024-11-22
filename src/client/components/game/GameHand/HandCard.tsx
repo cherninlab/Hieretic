@@ -6,17 +6,15 @@ import styles from './GameHand.module.css';
 export interface HandCardProps {
   card: Card;
   isPlayable: boolean;
-  onHover: (card: Card | null) => void;
+  onClick: () => void;
 }
 
-export function HandCard({ card, isPlayable, onHover }: HandCardProps) {
+export function HandCard({ card, isPlayable, onClick }: HandCardProps) {
   return (
     <motion.div
       className={clsx(styles.card, isPlayable ? styles.playable : styles.unplayable)}
-      whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      onHoverStart={() => onHover(card)}
-      onHoverEnd={() => onHover(null)}
+      onClick={isPlayable ? onClick : undefined}
     >
       <div className={styles.cardContent}>
         <h3>{card.name}</h3>

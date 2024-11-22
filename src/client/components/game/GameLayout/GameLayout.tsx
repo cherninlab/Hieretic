@@ -125,22 +125,10 @@ export function GameLayout({
 
       {/* Right Sidebar */}
       <div className={styles.sidebar}>
-        <div className={styles.cardCount}>{playerState.hand.length} cards in hand</div>
-
         <GameEffects
           playerEffects={playerState.activeEffects || []}
           opponentEffects={opponentState.activeEffects || []}
         />
-
-        <div className={styles.actionLog}>
-          <div className={styles.logTitle}>LAST ACTIONS</div>
-          <div className={styles.logEntries}>
-            {/* Add action log entries when implemented */}
-            <div className={styles.logEntry}>• Enemy played Dark Ritual</div>
-            <div className={styles.logEntry}>• Void effect triggered</div>
-            <div className={styles.logEntry}>• You lost 2 health</div>
-          </div>
-        </div>
       </div>
     </div>
   );
