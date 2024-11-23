@@ -2,7 +2,7 @@ import { CardEditor } from '@components/admin/CardEditor';
 import { CardList } from '@components/admin/CardList';
 import { DeckEditor } from '@components/admin/DeckEditor';
 import { Stats } from '@components/admin/Stats';
-import { CardDefinition } from '@shared/types/cards';
+import type { CardDefinition } from '@shared/types';
 import { useEffect, useState } from 'react';
 import styles from './AdminPage.module.css';
 

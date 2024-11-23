@@ -1,9 +1,10 @@
-import type { Layer } from '@shared/types/cards';
+import type { Layer } from '@shared/types';
 import styles from './GameBoard.module.css';
 
 export interface LayerSelectorProps {
   currentLayer: Layer;
   onLayerSelect: (layer: Layer) => void;
+  disabled?: boolean;
 }
 
 export function LayerSelector({ currentLayer, onLayerSelect }: LayerSelectorProps) {
@@ -20,12 +21,6 @@ export function LayerSelector({ currentLayer, onLayerSelect }: LayerSelectorProp
         className={currentLayer === 'mind' ? styles.active : ''}
       >
         Mind ○
-      </button>
-      <button
-        onClick={() => onLayerSelect('void')}
-        className={currentLayer === 'void' ? styles.active : ''}
-      >
-        Void ◊
       </button>
     </>
   );

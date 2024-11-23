@@ -1,4 +1,4 @@
-import { Card } from '@shared/types/cards';
+import type { Card } from '@shared/types';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import styles from './GameHand.module.css';
@@ -21,7 +21,6 @@ export function HandCard({ card, isPlayable, onClick }: HandCardProps) {
         <div className={styles.cardCost}>
           {card.cost.material > 0 && <span>{card.cost.material}●</span>}
           {card.cost.mind > 0 && <span>{card.cost.mind}○</span>}
-          {card.cost.void > 0 && <span>{card.cost.void}◊</span>}
         </div>
       </div>
     </motion.div>

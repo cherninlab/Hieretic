@@ -1,4 +1,4 @@
-import type { UserProfile } from '@shared/types/user';
+import type { UserProfile } from '@shared/types';
 import { useCallback } from 'react';
 import useSWR from 'swr';
 import { useProfileStore } from '../store/profileStore';

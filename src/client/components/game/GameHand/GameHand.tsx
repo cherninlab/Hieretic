@@ -1,4 +1,4 @@
-import { Card } from '@shared/types/cards';
+import type { Card } from '@shared/types';
 import styles from './GameHand.module.css';
 import { HandCard } from './HandCard';
 
@@ -9,7 +9,7 @@ export interface GameHandProps {
   onCardHover?: (card: Card | null) => void;
 }
 
-export function GameHand({ cards, playableCards, onCardPlay, onCardHover }: GameHandProps) {
+export function GameHand({ cards, playableCards, onCardPlay }: GameHandProps) {
   const handleCardClick = (cardId: string) => {
     if (playableCards.has(cardId)) {
       onCardPlay?.(cardId);

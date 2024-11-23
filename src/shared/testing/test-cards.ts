@@ -1,10 +1,9 @@
 import { Card } from '../types/cards';
 import { materialTestCards } from './test-cards-material';
-import { mindTestCards, voidTestCards } from './test-cards-mind-void';
+import { mindTestCards } from './test-cards-mind';
 
-export const allTestCards: Card[] = [...materialTestCards, ...mindTestCards, ...voidTestCards];
+export const allTestCards: Card[] = [...materialTestCards, ...mindTestCards];
 
-// Create a full test deck with appropriate card ratios
 export function createTestDeck(): Card[] {
   // Select cards maintaining layer balance
   const deck: Card[] = [];
@@ -15,13 +14,9 @@ export function createTestDeck(): Card[] {
   // Add mind cards (control elements)
   deck.push(...mindTestCards.slice(0, 8));
 
-  // Add void cards (power plays)
-  deck.push(...voidTestCards.slice(0, 10));
-
   return deck;
 }
 
-// Create a random test deck
 export function createRandomTestDeck(): Card[] {
   const deck: Card[] = [];
   const allCards = [...allTestCards];

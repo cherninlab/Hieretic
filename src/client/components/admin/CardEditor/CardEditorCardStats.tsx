@@ -1,4 +1,4 @@
-import type { CardDefinition, Layer } from '@shared/types/cards';
+import type { CardDefinition, Layer } from '@shared/types';
 import styles from './CardEditor.module.css';
 
 interface CardEditorCardStatsProps {
@@ -48,7 +48,7 @@ export function CardEditorCardStats({ card, onChange }: CardEditorCardStatsProps
   }
 
   if (card.type === 'ritual') {
-    const layers: Layer[] = ['material', 'mind', 'void'];
+    const layers: Layer[] = ['material', 'mind'];
     return (
       <div className={styles.section}>
         <h4>Ritual Properties</h4>

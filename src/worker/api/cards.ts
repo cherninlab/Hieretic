@@ -1,5 +1,4 @@
-import type { CardDefinition } from '@shared/types/cards';
-import type { Layer } from '@shared/types/core';
+import type { CardDefinition, Layer } from '@shared/types';
 import type { Env } from '../types';
 import { Errors } from '../utils/errors';
 import { jsonResponse } from '../utils/response';
@@ -84,11 +83,10 @@ export const handleCards = {
     const cardDefinition: CardDefinition = {
       ...card,
       id: cardId,
-      cost: card.cost || { material: 0, mind: 0, void: 0 },
+      cost: card.cost || { material: 0, mind: 0 },
       rarity: card.rarity || 'common',
       flavorText: card.flavorText || '',
       set: card.set || 'core',
-      artist: card.artist || '',
       releaseDate: Date.now(),
       abilities: card.abilities || [],
       effect: card.effect,

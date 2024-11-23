@@ -5,11 +5,11 @@
 
 ## Overview
 
-HIERETIC is a strategic card game. Drawing inspiration from medieval grimoires and forbidden texts, players manipulate three layers of existence: Material, Mind, and Void.
+HIERETIC is a strategic card game. Drawing inspiration from medieval grimoires and forbidden texts, players manipulate two layers of existence: Material, and Mind.
 
 ## Game Highlights
 
-- **Three Layers of Reality**: Master the physical realm, corrupt minds, or bend the laws of existence
+- **Two Layers of Reality**: Master the physical realm, or corrupt minds
 - **Strategic Depth**: Every choice ripples across layers, creating intricate combinations
 - **Dynamic Reality**: Watch as your decisions alter the fabric of the game world
 - **Occult Lore**: Uncover ancient secrets and forbidden knowledge

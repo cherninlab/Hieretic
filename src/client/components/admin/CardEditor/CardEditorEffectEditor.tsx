@@ -1,4 +1,4 @@
-import type { CardDefinition, Effect, EffectType, TargetType } from '@shared/types/cards';
+import type { CardDefinition, Effect, EffectType, TargetType } from '@shared/types';
 import styles from './CardEditor.module.css';
 
 interface CardEditorEffectEditorProps {
@@ -18,7 +18,7 @@ const effectTypes: EffectType[] = [
   'summon',
 ];
 
-const targetTypes: TargetType[] = ['self', 'ally', 'enemy', 'all', 'unit', 'player'];
+const targetTypes: TargetType[] = ['self', 'ally', 'enemy', 'all', 'player'];
 
 export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEditorProps) {
   const generateEffectId = () => `effect-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -27,7 +27,7 @@ export function CardEditorEffectEditor({ card, onChange }: CardEditorEffectEdito
     const newEffect: Effect = {
       id: generateEffectId(),
       type: 'damage',
-      target: 'unit',
+      target: 'enemy',
       value: 0,
     };
 

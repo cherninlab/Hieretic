@@ -1,4 +1,4 @@
-import type { UserProfile } from '@shared/types/user';
+import type { UserProfile } from '@shared/types';
 import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';

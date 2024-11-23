@@ -1,4 +1,4 @@
-import type { UserProfile } from '@shared/types/user';
+import type { UserProfile } from '@shared/types';
 import type { Env } from '../types';
 import { APIError } from '../types';
 import { jsonResponse } from '../utils/response';

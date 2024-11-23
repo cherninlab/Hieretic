@@ -1,5 +1,4 @@
-import type { Effect } from '@shared/types/cards';
-import type { GameEffect } from '@shared/types/game';
+import type { Effect, GameEffect } from '@shared/types';
 import styles from './GameEffects.module.css';
 
 interface GameEffectsProps {

@@ -1,7 +1,7 @@
 import { GameLayout } from '@components/game/GameLayout';
 import { Button } from '@components/ui/Button';
 import { Modal } from '@components/ui/Modal';
-import type { Layer } from '@shared/types/cards';
+import type { Layer, TargetingMode } from '@shared/types';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGame } from '../hooks/useGame';
@@ -12,11 +12,11 @@ export default function GamePage() {
   const { gameCode } = useParams<{ gameCode: string }>();
   const {
     gameState,
-    currentPlayer,
-    opponent,
+    currentPlayerId,
+    opponentId,
     isLoading,
     error,
-    playCard,
+    handleFieldSlotClick,
     changePhase,
     endTurn,
     activateAbility,
@@ -31,10 +31,7 @@ export default function GamePage() {
     abilityIndex: number;
   } | null>(null);
   const [showSurrenderModal, setShowSurrenderModal] = useState(false);
-  const [targetingMode, setTargetingMode] = useState<{
-    type: 'ability' | 'attack';
-    sourceId: string;
-  } | null>(null);
+  const [targetingMode, setTargetingMode] = useState<TargetingMode | null>(null);
   const [currentLayer, setCurrentLayer] = useState<Layer>('material');
 
   useEffect(() => {
@@ -47,10 +44,10 @@ export default function GamePage() {
 
   useEffect(() => {
     if (gameState?.status === 'finished' && gameState.winner) {
-      const isWinner = gameState.winner === currentPlayer?.id;
+      const isWinner = gameState.winner === currentPlayerId;
       navigate('/game-over', { state: { result: isWinner ? 'You won!' : 'You lost!' } });
     }
-  }, [gameState?.status, currentPlayer?.id, navigate, gameState?.winner]);
+  }, [gameState?.status, currentPlayerId, navigate, gameState?.winner]);
 
   const handleCardSelect = useCallback(
     (cardId: string) => {
@@ -65,29 +62,24 @@ export default function GamePage() {
       if (!isMyTurn || !gameCode) return;
 
       try {
-        if (targetingMode) {
-          if (targetingMode.type === 'ability' && selectedAbility) {
-            await activateAbility(targetingMode.sourceId, selectedAbility.abilityIndex, [
-              slotId.toString(),
-            ]);
-            setTargetingMode(null);
-            setSelectedAbility(null);
-          }
+        if (targetingMode && selectedAbility) {
+          await activateAbility(selectedAbility.cardId, selectedAbility.abilityIndex, [
+            slotId.toString(),
+          ]);
+          setSelectedAbility(null);
+          setTargetingMode(null);
           return;
         }
 
-        if (selectedCard) {
-          await playCard(selectedCard, slotId);
-          setSelectedCard(null);
-        }
+        await handleFieldSlotClick(slotId, false);
       } catch (error) {
         console.error('Error handling slot selection:', error);
       }
     },
-    [isMyTurn, gameCode, targetingMode, selectedCard, selectedAbility, activateAbility, playCard],
+    [isMyTurn, gameCode, targetingMode, selectedAbility, activateAbility, handleFieldSlotClick],
   );
 
-  if (isLoading || !gameState || !currentPlayer || !opponent) {
+  if (isLoading || !gameState || !currentPlayerId || !opponentId) {
     return (
       <div className={styles.loading}>
         <span className={styles.loadingText}>Synchronizing with the void...</span>
@@ -114,22 +106,12 @@ export default function GamePage() {
         currentPhase={gameState.phase}
         onPhaseChange={changePhase}
         playerState={{
-          ...currentPlayer,
+          ...gameState.players[currentPlayerId],
           activeLayer: currentLayer,
-          activeEffects: gameState.activeEffects.filter(
-            (effect) =>
-              effect.target === currentPlayer.id ||
-              currentPlayer.field.some((card) => card?.id === effect.target),
-          ),
         }}
         opponentState={{
-          ...opponent,
+          ...gameState.players[opponentId],
           activeLayer: currentLayer,
-          activeEffects: gameState.activeEffects.filter(
-            (effect) =>
-              effect.target === opponent.id ||
-              opponent.field.some((card) => card?.id === effect.target),
-          ),
         }}
         onCardSelect={handleCardSelect}
         onSlotSelect={handleSlotSelect}

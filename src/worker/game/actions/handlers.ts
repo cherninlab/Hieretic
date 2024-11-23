@@ -1,17 +1,7 @@
-import { Card } from '@shared/types/cards';
-import type { GameAction, GameState } from '@shared/types/game';
+import type { Card, GameAction, GameState } from '@shared/types';
+import { validateResources } from '@shared/types';
 import { Errors } from '@worker/utils/errors';
 import { GameActionTypes } from './types';
-
-// Helper function to check if player has enough resources
-function hasEnoughResources(
-  playerResources: Record<string, number>,
-  requiredResources: Record<string, number>,
-): boolean {
-  return Object.entries(requiredResources).every(
-    ([resource, cost]) => (playerResources[resource as keyof typeof playerResources] || 0) >= cost,
-  );
-}
 
 export const actionHandlers = {
   [GameActionTypes.PLAY_CARD]: (state: GameState, action: GameAction): GameState => {
@@ -30,7 +20,7 @@ export const actionHandlers = {
     };
 
     // Validate resources
-    if (!hasEnoughResources(player.resources, requiredResources)) {
+    if (!validateResources(player.resources, requiredResources)) {
       throw Errors.INVALID_INPUT('Insufficient resources');
     }
 
@@ -93,7 +83,7 @@ export const actionHandlers = {
     if (!player) throw Errors.NOT_FOUND('Player not found');
 
     // Validate resources
-    if (!hasEnoughResources(player.resources, resources)) {
+    if (!validateResources(player.resources, resources)) {
       throw Errors.INVALID_INPUT('Insufficient resources');
     }
 

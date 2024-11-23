@@ -1,5 +1,5 @@
 import type { KVNamespace, R2Bucket } from '@cloudflare/workers-types';
-import type { Card, Effect, GameState } from '@shared/types';
+import type { Card, Effect, GameState, ResourceState } from '@shared/types';
 
 export interface Env {
   // KV Namespaces
@@ -49,11 +49,7 @@ export interface GameSession extends GameState {
 export interface PlayerState {
   hand: Card[];
   deck: string[]; // Card IDs
-  resources: {
-    material: number;
-    void: number;
-    deep: number;
-  };
+  resources: ResourceState;
   health: number;
 }
 

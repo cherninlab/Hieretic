@@ -1,4 +1,4 @@
-import type { GameAction, GameState } from '@shared/types/game';
+import type { GameAction, GameState } from '@shared/types';
 import { Errors } from '@worker/utils/errors';
 
 export function createGameAction(type: string, playerId: string, data: any): GameAction {

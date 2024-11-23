@@ -1,5 +1,4 @@
-import { Card } from '@shared/types/cards';
-import { GamePhase } from '@shared/types/game';
+import type { Card, GamePhase, Layer, TargetingMode } from '@shared/types';
 import { useState } from 'react';
 import { BattleField } from './BattleField';
 import styles from './GameBoard.module.css';
@@ -16,11 +15,9 @@ export interface GameBoardProps {
   onAttack?: (attackerId: string, targetId: string) => void;
   onAbilityActivate?: (cardId: string, abilityIndex: number, targets: string[]) => void;
   isMyTurn: boolean;
-  targetingMode: {
-    type: 'ability' | 'attack';
-    sourceId: string;
-  } | null;
+  targetingMode: TargetingMode | null;
   currentPhase: GamePhase;
+  onLayerChange?: (layer: Layer) => void;
 }
 
 export function GameBoard({
@@ -35,19 +32,42 @@ export function GameBoard({
   isMyTurn,
   targetingMode,
   currentPhase,
+  onLayerChange,
 }: GameBoardProps) {
-  const [selectedLayer, setSelectedLayer] = useState<'material' | 'mind' | 'void'>('material');
+  const [selectedLayer, setSelectedLayer] = useState<Layer>('material');
+
+  const handleLayerSelect = (layer: Layer) => {
+    setSelectedLayer(layer);
+    onLayerChange?.(layer);
+  };
+
+  const completeTargetingMode = targetingMode
+    ? {
+        ...targetingMode,
+        validTargets: targetingMode.validTargets || [],
+      }
+    : null;
 
   return (
     <div className={styles.container}>
       <div className={styles.playerArea}>
-        <PlayerArea playerId={opponentPlayer} field={opponentField} isOpponent={true} />
+        <PlayerArea
+          playerId={opponentPlayer}
+          field={opponentField}
+          isOpponent={true}
+          layer={selectedLayer}
+        />
       </div>
 
       <div className={styles.centerArea}>
         <div className={styles.layerControls}>
-          <LayerSelector currentLayer={selectedLayer} onLayerSelect={setSelectedLayer} />
+          <LayerSelector
+            currentLayer={selectedLayer}
+            onLayerSelect={handleLayerSelect}
+            disabled={!isMyTurn || Boolean(targetingMode)}
+          />
         </div>
+
         <BattleField
           playerField={playerField}
           opponentField={opponentField}
@@ -56,13 +76,27 @@ export function GameBoard({
           onAttack={onAttack}
           onAbilityActivate={onAbilityActivate}
           isMyTurn={isMyTurn}
-          targetingMode={targetingMode}
+          targetingMode={completeTargetingMode}
           currentPhase={currentPhase}
+          currentLayer={selectedLayer}
         />
       </div>
 
       <div className={styles.playerArea}>
-        <PlayerArea playerId={currentPlayer} field={playerField} isOpponent={false} />
+        <PlayerArea
+          playerId={currentPlayer}
+          field={playerField}
+          isOpponent={false}
+          layer={selectedLayer}
+        />
+      </div>
+
+      {/* Phase Indicator */}
+      <div className={styles.phaseIndicator}>
+        <span className={styles.phaseText}>
+          {currentPhase.charAt(0).toUpperCase() + currentPhase.slice(1)} Phase
+        </span>
+        {isMyTurn && <span className={styles.turnIndicator}>Your Turn</span>}
       </div>
     </div>
   );

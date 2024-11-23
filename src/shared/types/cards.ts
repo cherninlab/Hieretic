@@ -1,10 +1,7 @@
-// Basic type definitions
 export type CardType = 'unit' | 'effect' | 'ritual';
-export type Layer = 'material' | 'mind' | 'void';
-export type Rarity = 'common' | 'uncommon' | 'rare' | 'mythic';
-export type CardSet = 'core' | 'expansion1';
-
-// Effect-related types
+export type Layer = 'material' | 'mind';
+export type Resource = 'material' | 'mind';
+export type Rarity = 'common' | 'uncommon' | 'rare';
 export type EffectType =
   | 'damage'
   | 'heal'
@@ -15,162 +12,85 @@ export type EffectType =
   | 'discard'
   | 'transform'
   | 'summon';
+export type TargetType = 'self' | 'ally' | 'enemy' | 'all' | 'player';
 
-export type TargetType = 'self' | 'ally' | 'enemy' | 'all' | 'unit' | 'player';
-export type TriggerType = 'onPlay' | 'onDeath' | 'startOfTurn' | 'endOfTurn';
+export interface CardCost {
+  material: number;
+  mind: number;
+}
 
-// Effect interface
 export interface Effect {
   id: string;
   type: EffectType;
   target: TargetType;
   value: number;
   duration?: number;
-  trigger?: TriggerType;
+  canTargetOtherLayer?: boolean;
 }
 
-// Base card properties interface
-export interface BaseCardProperties {
+export interface Ability extends Effect {
+  cost?: CardCost;
+  trigger?: 'onEnter' | 'onDeath' | 'onActivate';
+}
+
+export interface CardDefinition {
   id: string;
   name: string;
   type: CardType;
   layer: Layer;
-  cost: {
-    material: number;
-    mind: number;
-    void: number;
-  };
+  cost: CardCost;
   rarity: Rarity;
+  set: string;
+  releaseDate: number;
+  attack?: number;
+  defense?: number;
+  abilities?: Ability[];
+  effect?: Effect;
+  effects?: Effect[];
+  duration?: number;
+  layerRequirements?: Partial<Record<Layer, number>>;
   flavorText?: string;
   artworkUrl?: string;
 }
 
-// Specific card type interfaces
-export interface UnitCard extends BaseCardProperties {
+export interface UnitCard extends Omit<CardDefinition, 'type' | 'effect' | 'effects' | 'duration'> {
   type: 'unit';
   attack: number;
   defense: number;
-  abilities: Effect[];
+  abilities: Ability[];
 }
 
-export interface EffectCard extends BaseCardProperties {
+export interface EffectCard
+  extends Omit<
+    CardDefinition,
+    'type' | 'attack' | 'defense' | 'abilities' | 'effects' | 'duration'
+  > {
   type: 'effect';
   effect: Effect;
 }
 
-export interface RitualCard extends BaseCardProperties {
+export interface RitualCard
+  extends Omit<CardDefinition, 'type' | 'attack' | 'defense' | 'abilities' | 'effect'> {
   type: 'ritual';
   duration: number;
   effects: Effect[];
   layerRequirements: Partial<Record<Layer, number>>;
 }
 
-// Union type for all card types
 export type Card = UnitCard | EffectCard | RitualCard;
 
-// Card definition type (for database/storage and editing)
-export interface CardDefinition {
-  id: string;
-  name: string;
-  type: CardType;
-  layer: Layer;
-  cost: {
-    material: number;
-    mind: number;
-    void: number;
-  };
-  rarity: Rarity;
-  set: CardSet;
-  artist?: string;
-  releaseDate: number;
-  flavorText?: string;
-  artworkUrl?: string;
-
-  // Properties that depend on card type
-  attack?: number;
-  defense?: number;
-  abilities?: Effect[];
-  effect?: Effect;
-  duration?: number;
-  effects?: Effect[];
-  layerRequirements?: Partial<Record<Layer, number>>;
-}
-
-// Helper types
-export type NewCard = Omit<CardDefinition, 'id'>;
-
-// Type guard functions
-export function isUnitCard(card: Card | CardDefinition): card is UnitCard {
+// Type guards
+export function isUnitCard(card: Card): card is UnitCard {
   return card.type === 'unit';
 }
 
-export function isEffectCard(card: Card | CardDefinition): card is EffectCard {
+export function isEffectCard(card: Card): card is EffectCard {
   return card.type === 'effect';
 }
 
-export function isRitualCard(card: Card | CardDefinition): card is RitualCard {
+export function isRitualCard(card: Card): card is RitualCard {
   return card.type === 'ritual';
 }
 
-// Helper function to convert CardDefinition to Card
-export function cardDefinitionToCard(def: CardDefinition): Card {
-  switch (def.type) {
-    case 'unit':
-      return {
-        ...def,
-        type: 'unit',
-        attack: def.attack || 0,
-        defense: def.defense || 0,
-        abilities: def.abilities || [],
-      } as UnitCard;
-    case 'effect':
-      if (!def.effect) throw new Error('Effect card requires effect property');
-      return {
-        ...def,
-        type: 'effect',
-        effect: def.effect,
-      } as EffectCard;
-    case 'ritual':
-      if (!def.duration || !def.effects)
-        throw new Error('Ritual card requires duration and effects');
-      return {
-        ...def,
-        type: 'ritual',
-        duration: def.duration,
-        effects: def.effects,
-        layerRequirements: def.layerRequirements || {},
-      } as RitualCard;
-  }
-}
-
-// Helper function to create initial card definition
-export function createInitialCardDefinition(type: CardType): CardDefinition {
-  return {
-    id: `card-${Date.now()}`,
-    name: '',
-    type,
-    layer: 'material',
-    cost: { material: 0, mind: 0, void: 0 },
-    rarity: 'common',
-    set: 'core',
-    releaseDate: Date.now(),
-    ...(type === 'unit' ? { attack: 0, defense: 0, abilities: [] } : {}),
-    ...(type === 'effect'
-      ? {
-          effect: {
-            id: `effect-${Date.now()}`,
-            type: 'damage',
-            target: 'unit',
-            value: 0,
-          },
-        }
-      : {}),
-    ...(type === 'ritual'
-      ? {
-          duration: 3,
-          effects: [],
-          layerRequirements: {},
-        }
-      : {}),
-  };
-}
+// Utility types
+export type LayerResources = Record<Layer, number>;

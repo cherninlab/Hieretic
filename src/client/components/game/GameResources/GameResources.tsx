@@ -1,12 +1,8 @@
-import type { Layer } from '@shared/types/cards';
+import type { Layer, ResourceState } from '@shared/types';
 import styles from './GameResources.module.css';
 
 interface GameResourcesProps {
-  resources: {
-    material: number;
-    mind: number;
-    // void: number;
-  };
+  resources: ResourceState;
   layer: Layer;
   onLayerChange: (layer: Layer) => void;
 }
@@ -33,15 +29,6 @@ export function GameResources({ resources, layer, onLayerChange }: GameResources
           <span>Mind</span>
           <div className={styles.resourceCount}>{resources.mind}</div>
         </button>
-
-        {/* <button
-          className={`${styles.layerButton} ${layer === 'void' ? styles.active : ''}`}
-          onClick={() => onLayerChange('void')}
-        >
-          <div className={styles.resourceIcon}>◊</div>
-          <span>Void</span>
-          <div className={styles.resourceCount}>{resources.void}</div>
-        </button> */}
       </div>
 
       {/* Resource Details */}

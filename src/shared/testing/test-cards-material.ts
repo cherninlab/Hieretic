@@ -7,8 +7,10 @@ const materialCommonUnits: UnitCard[] = [
     name: 'Flesh Golem',
     type: 'unit',
     layer: 'material',
-    cost: { material: 2, mind: 0, void: 0 },
+    cost: { material: 2, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 2,
     defense: 3,
     abilities: [], // Basic stats unit
@@ -18,8 +20,10 @@ const materialCommonUnits: UnitCard[] = [
     name: 'Blood Hunter',
     type: 'unit',
     layer: 'material',
-    cost: { material: 1, mind: 0, void: 0 },
+    cost: { material: 1, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 2,
     defense: 1,
     abilities: [
@@ -36,8 +40,10 @@ const materialCommonUnits: UnitCard[] = [
     name: 'Bone Warrior',
     type: 'unit',
     layer: 'material',
-    cost: { material: 3, mind: 0, void: 0 },
+    cost: { material: 3, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 3,
     defense: 3,
     abilities: [], // Solid stats unit
@@ -47,8 +53,10 @@ const materialCommonUnits: UnitCard[] = [
     name: 'Flesh Weaver',
     type: 'unit',
     layer: 'material',
-    cost: { material: 2, mind: 0, void: 0 },
+    cost: { material: 2, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 1,
     defense: 2,
     abilities: [
@@ -65,8 +73,10 @@ const materialCommonUnits: UnitCard[] = [
     name: 'Stone Guardian',
     type: 'unit',
     layer: 'material',
-    cost: { material: 4, mind: 0, void: 0 },
+    cost: { material: 4, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 2,
     defense: 5,
     abilities: [], // Defensive wall
@@ -80,8 +90,10 @@ const materialUncommonUnits: UnitCard[] = [
     name: 'Blood Priest',
     type: 'unit',
     layer: 'material',
-    cost: { material: 2, mind: 1, void: 0 },
+    cost: { material: 2, mind: 1 },
     rarity: 'uncommon',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 2,
     defense: 2,
     abilities: [
@@ -98,8 +110,10 @@ const materialUncommonUnits: UnitCard[] = [
     name: 'Bone Sculptor',
     type: 'unit',
     layer: 'material',
-    cost: { material: 3, mind: 1, void: 0 },
+    cost: { material: 3, mind: 1 },
     rarity: 'uncommon',
+    set: 'core',
+    releaseDate: Date.now(),
     attack: 2,
     defense: 3,
     abilities: [
@@ -113,28 +127,6 @@ const materialUncommonUnits: UnitCard[] = [
   },
 ];
 
-// Uncommon Units - Physical + Void hints
-const materialVoidUnits: UnitCard[] = [
-  {
-    id: 'mat-void-1',
-    name: 'Flesh Abomination',
-    type: 'unit',
-    layer: 'material',
-    cost: { material: 3, mind: 0, void: 1 },
-    rarity: 'uncommon',
-    attack: 4,
-    defense: 4,
-    abilities: [
-      {
-        id: 'ability-consume',
-        type: 'damage',
-        target: 'self',
-        value: 1,
-      },
-    ],
-  },
-];
-
 // Common Effects - Pure Physical
 const materialCommonEffects: EffectCard[] = [
   {
@@ -142,12 +134,14 @@ const materialCommonEffects: EffectCard[] = [
     name: 'Blood Strike',
     type: 'effect',
     layer: 'material',
-    cost: { material: 1, mind: 0, void: 0 },
+    cost: { material: 1, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     effect: {
       id: 'effect-blood-strike',
       type: 'damage',
-      target: 'unit',
+      target: 'enemy',
       value: 2,
     },
   },
@@ -156,58 +150,14 @@ const materialCommonEffects: EffectCard[] = [
     name: 'Bone Shield',
     type: 'effect',
     layer: 'material',
-    cost: { material: 2, mind: 0, void: 0 },
+    cost: { material: 2, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     effect: {
       id: 'effect-bone-shield',
       type: 'buff',
       target: 'ally',
-      value: 2,
-    },
-  },
-  {
-    id: 'mat-eff-3',
-    name: 'Flesh Knitting',
-    type: 'effect',
-    layer: 'material',
-    cost: { material: 2, mind: 0, void: 0 },
-    rarity: 'common',
-    effect: {
-      id: 'effect-flesh-knit',
-      type: 'heal',
-      target: 'ally',
-      value: 3,
-    },
-  },
-];
-
-// Uncommon Effects - Physical + Mind/Void
-const materialUncommonEffects: EffectCard[] = [
-  {
-    id: 'mat-eff-unc-1',
-    name: 'Blood Ritual',
-    type: 'effect',
-    layer: 'material',
-    cost: { material: 2, mind: 1, void: 0 },
-    rarity: 'uncommon',
-    effect: {
-      id: 'effect-blood-ritual',
-      type: 'transform',
-      target: 'all',
-      value: 1,
-    },
-  },
-  {
-    id: 'mat-eff-unc-2',
-    name: 'Flesh Corruption',
-    type: 'effect',
-    layer: 'material',
-    cost: { material: 2, mind: 0, void: 1 },
-    rarity: 'uncommon',
-    effect: {
-      id: 'effect-flesh-corrupt',
-      type: 'debuff',
-      target: 'enemy',
       value: 2,
     },
   },
@@ -220,8 +170,10 @@ const materialRituals: RitualCard[] = [
     name: 'Blood Circle',
     type: 'ritual',
     layer: 'material',
-    cost: { material: 3, mind: 0, void: 0 },
+    cost: { material: 3, mind: 0 },
     rarity: 'common',
+    set: 'core',
+    releaseDate: Date.now(),
     duration: 3,
     effects: [
       {
@@ -235,35 +187,12 @@ const materialRituals: RitualCard[] = [
       material: 2,
     },
   },
-  {
-    id: 'mat-rit-2',
-    name: 'Bone Harvest',
-    type: 'ritual',
-    layer: 'material',
-    cost: { material: 4, mind: 1, void: 0 },
-    rarity: 'uncommon',
-    duration: 2,
-    effects: [
-      {
-        id: 'ritual-bone-harvest',
-        type: 'damage',
-        target: 'enemy',
-        value: 2,
-      },
-    ],
-    layerRequirements: {
-      material: 2,
-      mind: 1,
-    },
-  },
 ];
 
 // Combine all material cards
 export const materialTestCards: Card[] = [
   ...materialCommonUnits,
   ...materialUncommonUnits,
-  ...materialVoidUnits,
   ...materialCommonEffects,
-  ...materialUncommonEffects,
   ...materialRituals,
 ];

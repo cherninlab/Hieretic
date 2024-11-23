@@ -1,4 +1,4 @@
-import { GamePhase } from '@shared/types/game';
+import type { GamePhase } from '@shared/types';
 import styles from './GameControls.module.css';
 
 export interface PhaseIndicatorProps {

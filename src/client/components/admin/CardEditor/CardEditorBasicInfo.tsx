@@ -1,4 +1,4 @@
-import type { CardDefinition, CardType, Layer } from '@shared/types/cards';
+import type { CardDefinition, CardType, Layer } from '@shared/types';
 import styles from './CardEditor.module.css';
 
 interface CardEditorBasicInfoProps {
@@ -18,8 +18,8 @@ export function CardEditorBasicInfo({ card, onChange, onTypeChange }: CardEditor
     });
   };
 
-  const layers: Layer[] = ['material', 'mind', 'void'];
-  const rarities = ['common', 'uncommon', 'rare', 'mythic'] as const;
+  const layers: Layer[] = ['material', 'mind'];
+  const rarities = ['common', 'uncommon', 'rare'] as const;
 
   return (
     <div className={styles.section}>

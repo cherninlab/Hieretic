@@ -1,4 +1,4 @@
-import { Card } from '@shared/types/cards';
+import type { Card } from '@shared/types';
 import styles from './GameHand.module.css';
 
 export interface CardPreviewProps {

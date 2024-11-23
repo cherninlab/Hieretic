@@ -1,4 +1,4 @@
-import { UserProfile } from '@shared/types/user';
+import type { UserProfile } from '@shared/types';
 import { create } from 'zustand';
 
 interface ProfileState {

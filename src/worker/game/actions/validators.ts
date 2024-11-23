@@ -1,4 +1,4 @@
-import { GameAction, GameState } from '@shared/types/game';
+import type { GameAction, GameState } from '@shared/types';
 import { GameActionTypes } from '@worker/game/actions/types';
 
 export const actionValidators = {

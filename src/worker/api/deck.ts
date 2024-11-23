@@ -1,4 +1,4 @@
-import type { Deck } from '@shared/types/user';
+import type { Deck } from '@shared/types';
 import type { Env } from '../types';
 import { APIError } from '../types';
 import { jsonResponse } from '../utils/response';

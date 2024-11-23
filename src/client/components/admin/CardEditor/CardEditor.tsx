@@ -1,4 +1,4 @@
-import type { CardDefinition, CardType } from '@shared/types/cards';
+import type { CardDefinition, CardType } from '@shared/types';
 import { useState } from 'react';
 import { CardArtworkUploader } from './CardArtworkUploader';
 import styles from './CardEditor.module.css';
@@ -17,7 +17,7 @@ const defaultCard: CardDefinition = {
   name: '',
   type: 'unit',
   layer: 'material',
-  cost: { material: 0, mind: 0, void: 0 },
+  cost: { material: 0, mind: 0 },
   rarity: 'common',
   set: 'core',
   releaseDate: Date.now(),
@@ -75,7 +75,7 @@ export function CardEditor({ initialCard, onSave }: CardEditorProps) {
           effect: {
             id: `effect-${Date.now()}`,
             type: 'damage',
-            target: 'unit',
+            target: 'enemy',
             value: 0,
           },
         };

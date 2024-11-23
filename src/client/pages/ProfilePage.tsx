@@ -1,5 +1,5 @@
 import { createTestDeck } from '@shared/testing/test-cards';
-import type { Card } from '@shared/types/cards';
+import type { Card } from '@shared/types';
 import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -138,7 +138,7 @@ export default function ProfilePage() {
                     {card.type} - {card.layer}
                   </div>
                   <div className={styles.cardCost}>
-                    Cost: {card.cost.material}● {card.cost.mind}○ {card.cost.void}◊
+                    Cost: {card.cost.material}● {card.cost.mind}○
                   </div>
                 </div>
               ))}

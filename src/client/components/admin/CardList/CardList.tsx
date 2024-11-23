@@ -1,5 +1,5 @@
 import { Button } from '@components/ui/Button';
-import type { CardDefinition, Rarity } from '@shared/types/cards';
+import type { CardDefinition, Rarity } from '@shared/types';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import styles from './CardList.module.css';
@@ -51,8 +51,6 @@ export function CardList({ onEditCard, onDeleteCard }: CardListProps) {
         return styles.uncommon;
       case 'rare':
         return styles.rare;
-      case 'mythic':
-        return styles.mythic;
       default:
         return '';
     }
@@ -70,7 +68,7 @@ export function CardList({ onEditCard, onDeleteCard }: CardListProps) {
             </div>
             <div className={styles.cardStats}>
               <span>
-                Cost: {card.cost.material}● {card.cost.mind}○ {card.cost.void}◊
+                Cost: {card.cost.material}● {card.cost.mind}○
               </span>
               {card.type === 'unit' && (
                 <span>

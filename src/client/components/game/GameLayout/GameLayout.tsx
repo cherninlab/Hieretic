@@ -3,23 +3,8 @@ import { GameControls } from '@components/game/GameControls';
 import { GameEffects } from '@components/game/GameEffects';
 import { GameHand } from '@components/game/GameHand';
 import { GameResources } from '@components/game/GameResources';
-import type { Card, Layer } from '@shared/types/cards';
-import type { GameEffect, GamePhase } from '@shared/types/game';
+import type { GamePhase, Layer, PlayerState, TargetingMode } from '@shared/types';
 import styles from './GameLayout.module.css';
-
-interface PlayerState {
-  id: string;
-  health: number;
-  hand: Card[];
-  field: (Card | null)[];
-  resources: {
-    material: number;
-    mind: number;
-    void: number;
-  };
-  activeLayer: Layer;
-  activeEffects?: GameEffect[];
-}
 
 interface GameLayoutProps {
   currentPhase: GamePhase;
@@ -35,10 +20,7 @@ interface GameLayoutProps {
   selectedCard: string | null;
   isMyTurn: boolean;
   turn: number;
-  targetingMode: {
-    type: 'ability' | 'attack';
-    sourceId: string;
-  } | null;
+  targetingMode: TargetingMode | null;
 }
 
 export function GameLayout({

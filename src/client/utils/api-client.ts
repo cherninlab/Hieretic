@@ -1,161 +1,132 @@
-import type { GamePhase, GameStateResponse } from '@shared/types/game';
-import type { UserProfile } from '@shared/types/user';
+import type { GamePhase, GameState, Layer } from '@shared/types';
 
-interface CreateGameResponse {
-  gameCode: string;
+interface APIResponse<T> {
+  success: boolean;
+  data: T;
+  error?: {
+    code: string;
+    message: string;
+  };
 }
 
-interface FetchOptions extends RequestInit {
-  skipAuth?: boolean;
-}
-
-// Base API client
 class APIClient {
-  private static getHeaders(skipAuth: boolean = false): HeadersInit {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+  private static baseUrl = '/api';
+  private static headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
 
-    if (!skipAuth) {
-      const profileId = localStorage.getItem('profileId');
-      if (profileId) {
-        headers['X-Profile-ID'] = profileId;
-      }
+  static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const profileId = localStorage.getItem('profileId');
+    if (profileId) {
+      this.headers = {
+        ...this.headers,
+        'X-Profile-ID': profileId,
+      };
     }
 
-    return headers;
-  }
-
-  static async fetch<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-    const { skipAuth = false, ...fetchOptions } = options;
-
-    const response = await fetch(`/api${endpoint}`, {
-      ...fetchOptions,
-      headers: {
-        ...this.getHeaders(skipAuth),
-        ...fetchOptions.headers,
-      },
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      headers: this.headers,
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || 'Network response was not ok');
+      throw new Error(error.error?.message || 'Request failed');
     }
 
-    const data = await response.json();
+    const data: APIResponse<T> = await response.json();
+    if (!data.success) {
+      throw new Error(data.error?.message || 'Request failed');
+    }
+
     return data.data;
   }
 }
 
-// Game-specific API methods
 export const gameAPI = {
-  // Game creation and joining
+  // Game state
+  getState: (gameCode: string) => APIClient.request<GameState>(`/game/state?gameCode=${gameCode}`),
+
+  // Game creation & joining
   create: () =>
-    APIClient.fetch<CreateGameResponse>('/game/create', {
+    APIClient.request<{ gameCode: string }>('/game/create', {
       method: 'POST',
     }),
 
   join: (gameCode: string) =>
-    APIClient.fetch<{ success: boolean }>('/game/join', {
+    APIClient.request<{ success: boolean }>('/game/join', {
       method: 'POST',
       body: JSON.stringify({ gameCode }),
     }),
 
-  // Game state management
-  getState: (gameCode: string) =>
-    APIClient.fetch<GameStateResponse>(`/game/state?gameCode=${gameCode}`),
-
   start: (gameCode: string) =>
-    APIClient.fetch<{ success: boolean }>('/game/start', {
+    APIClient.request<{ success: boolean }>('/game/start', {
       method: 'POST',
       body: JSON.stringify({ gameCode }),
     }),
 
   // Game actions
   playCard: (gameCode: string, cardId: string, position: number) =>
-    APIClient.fetch<{ success: boolean }>('/game/play-card', {
+    APIClient.request<{ success: boolean }>('/game/play-card', {
       method: 'POST',
       body: JSON.stringify({ gameCode, cardId, position }),
     }),
 
-  changePhase: (gameCode: string, phase: GamePhase) =>
-    APIClient.fetch<{ success: boolean }>('/game/change-phase', {
-      method: 'POST',
-      body: JSON.stringify({ gameCode, phase }),
-    }),
-
-  endTurn: (gameCode: string) =>
-    APIClient.fetch<{ success: boolean }>('/game/end-turn', {
-      method: 'POST',
-      body: JSON.stringify({ gameCode }),
-    }),
-
-  // Combat actions
-  declareAttack: (gameCode: string, attackerId: string, targetId: string) =>
-    APIClient.fetch<{ success: boolean }>('/game/declare-attack', {
-      method: 'POST',
-      body: JSON.stringify({ gameCode, attackerId, targetId }),
-    }),
-
-  declareBlock: (gameCode: string, blockerId: string, attackerId: string) =>
-    APIClient.fetch<{ success: boolean }>('/game/declare-block', {
-      method: 'POST',
-      body: JSON.stringify({ gameCode, blockerId, attackerId }),
-    }),
-
-  // Card abilities
   activateAbility: (gameCode: string, cardId: string, abilityIndex: number, targets: string[]) =>
-    APIClient.fetch<{ success: boolean }>('/game/activate-ability', {
+    APIClient.request<{ success: boolean }>('/game/activate-ability', {
       method: 'POST',
       body: JSON.stringify({ gameCode, cardId, abilityIndex, targets }),
     }),
 
-  // Layer management
-  changeLayer: (gameCode: string, layer: 'material' | 'mind' | 'void') =>
-    APIClient.fetch<{ success: boolean }>('/game/change-layer', {
+  changePhase: (gameCode: string, phase: GamePhase) =>
+    APIClient.request<{ success: boolean }>('/game/change-phase', {
+      method: 'POST',
+      body: JSON.stringify({ gameCode, phase }),
+    }),
+
+  changeLayer: (gameCode: string, layer: Layer) =>
+    APIClient.request<{ success: boolean }>('/game/change-layer', {
       method: 'POST',
       body: JSON.stringify({ gameCode, layer }),
     }),
 
-  // Resource management
-  spendResources: (gameCode: string, resources: Record<string, number>) =>
-    APIClient.fetch<{ success: boolean }>('/game/spend-resources', {
-      method: 'POST',
-      body: JSON.stringify({ gameCode, resources }),
-    }),
-
-  // Game lifecycle
-  surrender: (gameCode: string) =>
-    APIClient.fetch<{ success: boolean }>('/game/surrender', {
+  endTurn: (gameCode: string) =>
+    APIClient.request<{ success: boolean }>('/game/end-turn', {
       method: 'POST',
       body: JSON.stringify({ gameCode }),
     }),
 
-  // Matchmaking
-  findMatch: () =>
-    APIClient.fetch<{ gameCode: string }>('/matchmake', {
+  declareAttack: (gameCode: string, attackerId: string, targetId: string) =>
+    APIClient.request<{ success: boolean }>('/game/declare-attack', {
       method: 'POST',
+      body: JSON.stringify({ gameCode, attackerId, targetId }),
     }),
 
-  cancelMatchmaking: () =>
-    APIClient.fetch<{ success: boolean }>('/matchmake/cancel', {
+  surrender: (gameCode: string) =>
+    APIClient.request<{ success: boolean }>('/game/surrender', {
       method: 'POST',
+      body: JSON.stringify({ gameCode }),
+    }),
+
+  // Resource management
+  spendResources: (gameCode: string, resources: Record<Layer, number>) =>
+    APIClient.request<{ success: boolean }>('/game/spend-resources', {
+      method: 'POST',
+      body: JSON.stringify({ gameCode, resources }),
     }),
 };
 
-// Profile-specific API methods
 export const profileAPI = {
-  get: (id: string) => APIClient.fetch(`/profile?id=${id}`),
+  get: (id: string) => APIClient.request(`/profile?id=${id}`),
 
   create: (username: string) =>
-    APIClient.fetch('/profile/create', {
+    APIClient.request('/profile/create', {
       method: 'POST',
       body: JSON.stringify({ username }),
-      skipAuth: true,
     }),
 
-  update: (updates: Partial<UserProfile>) =>
-    APIClient.fetch('/profile', {
+  update: (updates: Record<string, any>) =>
+    APIClient.request('/profile', {
       method: 'POST',
       body: JSON.stringify(updates),
     }),

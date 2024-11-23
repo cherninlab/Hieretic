@@ -1,154 +1,88 @@
-import type { GamePhase, GameState } from '@shared/types/game';
-import { useCallback, useState } from 'react';
+import type { GamePhase } from '@shared/types';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useSWR from 'swr';
 import { gameAPI } from '../utils/api-client';
+import { useGameBoard } from './game/useGameBoard';
+import { useGameLayer } from './game/useGameLayer';
+import { useGameResources } from './game/useGameResources';
+import { useGameSync } from './game/useGameSync';
 import { useProfile } from './useProfile';
 
 export function useGame(gameCode?: string) {
   const navigate = useNavigate();
   const { profile } = useProfile();
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    data: gameState,
-    error: gameError,
-    mutate: mutateGameState,
-  } = useSWR<GameState>(
-    gameCode ? `/game/state?gameCode=${gameCode}` : null,
-    gameCode ? () => gameAPI.getState(gameCode) : null,
-    {
-      refreshInterval: 2000,
-      refreshWhenHidden: true,
-      revalidateOnFocus: true,
-    },
+  // Initialize specialized hooks
+  const { gameState, currentPlayerId, opponentId, isMyTurn, refreshState, isLoading, error } =
+    useGameSync(gameCode, profile);
+
+  const { currentLayer, cardsInLayer, playableCards, changeLayer } = useGameLayer(
+    gameState,
+    currentPlayerId,
+    isMyTurn,
   );
 
-  // Extract current player and opponent states
-  const currentPlayer = gameState && profile ? gameState.players[profile.id] || null : null;
+  const {
+    selectedCard,
+    targetingMode,
+    validPlayPositions,
+    highlightedPositions,
+    playerField,
+    opponentField,
+    selectCard,
+    playCard,
+    initiateAttack,
+    initiateAbility,
+    handleFieldSlotClick,
+    cancelTargeting,
+  } = useGameBoard(gameState, currentPlayerId, currentLayer, isMyTurn);
 
-  const opponent =
-    gameState && profile
-      ? Object.values(gameState.players).find((p) => p.id !== profile.id) || null
-      : null;
+  const { currentResources, generation, canPlayCard, getResourceRequirement } = useGameResources(
+    gameCode || '',
+    currentPlayerId || '',
+    gameState?.phase || 'init',
+    isMyTurn,
+  );
 
-  const isMyTurn = Boolean(gameState && profile && gameState.currentPlayer === profile.id);
-
+  // Game setup actions
   const createGame = useCallback(async () => {
     if (!profile) return;
 
     try {
-      setIsLoading(true);
-      setError(null);
       const { gameCode } = await gameAPI.create();
       navigate(`/lobby/${gameCode}`);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to create game'));
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to create game:', error);
+      throw error;
     }
-  }, [navigate, profile]);
+  }, [profile, navigate]);
 
   const joinGame = useCallback(
     async (gameCode: string) => {
       if (!profile) return;
 
       try {
-        setIsLoading(true);
-        setError(null);
         await gameAPI.join(gameCode);
         navigate(`/lobby/${gameCode}`);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to join game'));
-      } finally {
-        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to join game:', error);
+        throw error;
       }
     },
-    [navigate, profile],
+    [profile, navigate],
   );
 
   const startGame = useCallback(
     async (gameCode: string) => {
       try {
-        setIsLoading(true);
-        setError(null);
         await gameAPI.start(gameCode);
         navigate(`/game/${gameCode}`);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to start game'));
-      } finally {
-        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to start game:', error);
+        throw error;
       }
     },
     [navigate],
-  );
-
-  const playCard = useCallback(
-    async (cardId: string, position: number) => {
-      if (!gameCode || !isMyTurn) return;
-
-      try {
-        await gameAPI.playCard(gameCode, cardId, position);
-        await mutateGameState();
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to play card'));
-      }
-    },
-    [gameCode, isMyTurn, mutateGameState],
-  );
-
-  const changePhase = useCallback(
-    async (phase: GamePhase) => {
-      if (!gameCode || !isMyTurn) return;
-
-      try {
-        await gameAPI.changePhase(gameCode, phase);
-        await mutateGameState();
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to change phase'));
-      }
-    },
-    [gameCode, isMyTurn, mutateGameState],
-  );
-
-  const endTurn = useCallback(async () => {
-    if (!gameCode || !isMyTurn) return;
-
-    try {
-      await gameAPI.endTurn(gameCode);
-      await mutateGameState();
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to end turn'));
-    }
-  }, [gameCode, isMyTurn, mutateGameState]);
-
-  const activateAbility = useCallback(
-    async (cardId: string, abilityIndex: number, targets: string[]) => {
-      if (!gameCode || !isMyTurn) return;
-
-      try {
-        await gameAPI.activateAbility(gameCode, cardId, abilityIndex, targets);
-        await mutateGameState();
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to activate ability'));
-      }
-    },
-    [gameCode, isMyTurn, mutateGameState],
-  );
-
-  const changeLayer = useCallback(
-    async (layer: 'material' | 'mind' | 'void') => {
-      if (!gameCode || !isMyTurn) return;
-
-      try {
-        await gameAPI.changeLayer(gameCode, layer);
-        await mutateGameState();
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to change layer'));
-      }
-    },
-    [gameCode, isMyTurn, mutateGameState],
   );
 
   const surrender = useCallback(async () => {
@@ -157,29 +91,113 @@ export function useGame(gameCode?: string) {
     try {
       await gameAPI.surrender(gameCode);
       navigate('/');
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to surrender'));
+    } catch (error) {
+      console.error('Failed to surrender:', error);
+      throw error;
     }
   }, [gameCode, navigate]);
 
+  // Game phase management
+  const changePhase = useCallback(
+    async (phase: GamePhase) => {
+      if (!gameCode || !isMyTurn) return;
+
+      try {
+        await gameAPI.changePhase(gameCode, phase);
+        await refreshState();
+      } catch (error) {
+        console.error('Failed to change phase:', error);
+        throw error;
+      }
+    },
+    [gameCode, isMyTurn, refreshState],
+  );
+
+  const endTurn = useCallback(async () => {
+    if (!gameCode || !isMyTurn) return;
+
+    try {
+      await gameAPI.endTurn(gameCode);
+      await refreshState();
+    } catch (error) {
+      console.error('Failed to end turn:', error);
+      throw error;
+    }
+  }, [gameCode, isMyTurn, refreshState]);
+
+  // Card ability activation
+  const activateAbility = useCallback(
+    async (cardId: string, abilityIndex: number, targets: string[]) => {
+      if (!gameCode || !isMyTurn) return;
+
+      try {
+        await gameAPI.activateAbility(gameCode, cardId, abilityIndex, targets);
+        await refreshState();
+        cancelTargeting();
+      } catch (error) {
+        console.error('Failed to activate ability:', error);
+        throw error;
+      }
+    },
+    [gameCode, isMyTurn, refreshState, cancelTargeting],
+  );
+
+  // Game state validation
+  const canEndTurn = useMemo(() => {
+    if (!isMyTurn || !gameState) return false;
+    return gameState.phase === 'end';
+  }, [isMyTurn, gameState]);
+
   return {
+    // Game state
     gameState,
-    currentPlayer,
-    opponent,
+    currentPlayerId,
+    opponentId,
+    isMyTurn,
+    currentPhase: gameState?.phase || 'init',
     isLoading,
-    error: error || gameError,
+    error,
+
+    // Board state
+    selectedCard,
+    targetingMode,
+    playerField,
+    opponentField,
+    validPlayPositions,
+    highlightedPositions,
+
+    // Layer state
+    currentLayer,
+    cardsInLayer,
+
+    // Resources
+    resources: currentResources,
+    resourceGeneration: generation,
+
+    // Derived states
+    canEndTurn,
+    playableCards,
+    validTargets: highlightedPositions,
+
+    // Actions
     createGame,
     joinGame,
     startGame,
+    surrender,
     playCard,
+    activateAbility,
     changePhase,
     endTurn,
-    activateAbility,
+    selectCard,
+    initiateAttack,
+    initiateAbility,
+    cancelAction: cancelTargeting,
     changeLayer,
-    surrender,
-    mutateGameState: async () => {
-      await mutateGameState();
-    },
-    isMyTurn,
+    refreshState,
+
+    // Utility functions
+    canPlayCard,
+    getResourceRequirement,
+    handleFieldSlotClick,
   };
 }

@@ -1,6 +1,15 @@
 import { createTestDeck } from '@shared/testing/test-cards';
-import { Card, Layer } from '@shared/types/cards';
-import type { GameAction, GameEffect, GamePhase, GameState } from '@shared/types/game';
+import type {
+  Card,
+  Effect,
+  GameAction,
+  GameEffect,
+  GamePhase,
+  GameState,
+  Layer,
+  PlayerState,
+  UserProfile,
+} from '@shared/types';
 import type { Env } from '@worker/types';
 import { Errors } from '@worker/utils/errors';
 import { kvGet, kvPut } from '@worker/utils/kv';
@@ -11,9 +20,8 @@ import { GameEventTypes } from '../events/types';
 const INITIAL_HAND_SIZE = 5;
 const INITIAL_HEALTH = 20;
 const INITIAL_RESOURCES = {
-  material: 1,
-  mind: 1,
-  void: 1,
+  material: 3,
+  mind: 3,
 };
 const FIELD_SIZE = 4;
 
@@ -40,6 +48,29 @@ export class GameStateManager {
     // Initialize decks and hands
     const { playerDecks, playerHands } = this.initializeDecksAndHands(players.length);
 
+    // Fetch player profiles
+    const playerProfiles: Record<string, UserProfile> = {};
+    await Promise.all(
+      players.map(async (playerId) => {
+        const profileData = await this.env.USER_DATA.get(playerId);
+        if (profileData) {
+          try {
+            playerProfiles[playerId] = JSON.parse(profileData);
+          } catch (e) {
+            console.error(`Failed to parse profile data for ${playerId}:`, e);
+            playerProfiles[playerId] = {
+              id: playerId,
+              username: `Player-${playerId.slice(-4)}`,
+              activeDeckId: '',
+              created: Date.now(),
+              preferences: { theme: 'default', cardBack: 'default' },
+              statistics: { gamesPlayed: 0, wins: 0, losses: 0, winStreak: 0 },
+            };
+          }
+        }
+      }),
+    );
+
     const initialState: GameState = {
       id: `game-${Date.now()}`,
       status: 'active',
@@ -49,6 +80,10 @@ export class GameStateManager {
       players: this.createPlayerStates(players, playerDecks, playerHands),
       activeEffects: [],
       history: [],
+      playerProfiles,
+      createdBy: players[0],
+      created: Date.now(),
+      startedAt: Date.now(),
     };
 
     await this.saveState(initialState.id, initialState);
@@ -88,7 +123,7 @@ export class GameStateManager {
     players: string[],
     decks: string[][],
     hands: Card[][],
-  ): Record<string, any> {
+  ): Record<string, PlayerState> {
     return players.reduce(
       (states, playerId, index) => {
         states[playerId] = {
@@ -99,10 +134,11 @@ export class GameStateManager {
           field: Array(FIELD_SIZE).fill(null),
           resources: { ...INITIAL_RESOURCES },
           activeLayer: 'material' as Layer,
+          activeEffects: [],
         };
         return states;
       },
-      {} as Record<string, any>,
+      {} as Record<string, PlayerState>,
     );
   }
 
@@ -127,10 +163,10 @@ export class GameStateManager {
     return newState;
   }
 
-  async processGameEvents(state: GameState, action: GameAction): Promise<void> {
-    // Example event processing - expand based on your needs
+  private async processGameEvents(state: GameState, action: GameAction): Promise<void> {
     const events = [];
 
+    // Handle phase changes
     if (action.type === 'CHANGE_PHASE') {
       events.push({
         type: GameEventTypes.PHASE_CHANGED,
@@ -154,9 +190,21 @@ export class GameStateManager {
         type: GameEventTypes.EFFECT_TRIGGERED,
         data: { effect, expired: true },
       });
+
+      // Remove effect from affected cards
+      if (effect.affectedCardIds.length > 0) {
+        await this.removeEffectFromCards(state, effect);
+      }
     }
 
+    // Update state with processed effects
     state.activeEffects = activeEffects;
+  }
+
+  private async removeEffectFromCards(_state: GameState, _effect: GameEffect): Promise<void> {
+    // Implement effect removal logic here
+    // This would need to update the cards in the game state to remove the effect
+    // You'll need to handle different effect types differently
   }
 
   private async checkWinConditions(state: GameState): Promise<GameState | null> {
@@ -168,10 +216,41 @@ export class GameStateManager {
             ...state,
             status: 'finished',
             winner,
+            finishedAt: Date.now(),
+          };
+        }
+      }
+
+      // Check for deck-out condition
+      if (playerState.deck.length === 0 && playerState.hand.length === 0) {
+        const winner = Object.keys(state.players).find((id) => id !== playerId);
+        if (winner) {
+          return {
+            ...state,
+            status: 'finished',
+            winner,
+            finishedAt: Date.now(),
           };
         }
       }
     }
     return null;
+  }
+
+  async addEffectToState(state: GameState, effect: Effect, sourceId: string): Promise<GameState> {
+    const gameEffect: GameEffect = {
+      id: `effect-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      sourceCardId: sourceId,
+      sourceName: 'Unknown Source', // You might want to look up the actual card name
+      type: effect.type,
+      target: effect.target,
+      value: effect.value,
+      remainingDuration: effect.duration || 1,
+      affectedCardIds: [],
+    };
+
+    state.activeEffects.push(gameEffect);
+    await this.saveState(state.id, state);
+    return state;
   }
 }

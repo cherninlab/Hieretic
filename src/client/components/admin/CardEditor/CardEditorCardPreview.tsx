@@ -1,4 +1,4 @@
-import { CardDefinition, Effect } from '@shared/types/cards';
+import type { CardDefinition, Effect } from '@shared/types';
 import styles from './CardEditor.module.css';
 
 interface CardEditorCardPreviewProps {
@@ -32,7 +32,6 @@ export function CardEditorCardPreview({ card }: CardEditorCardPreviewProps) {
         <div className={styles.costs}>
           {card.cost.material > 0 && <div className={styles.costItem}>{card.cost.material}●</div>}
           {card.cost.mind > 0 && <div className={styles.costItem}>{card.cost.mind}○</div>}
-          {card.cost.void > 0 && <div className={styles.costItem}>{card.cost.void}◊</div>}
         </div>
 
         <div className={styles.artworkPreview} />
